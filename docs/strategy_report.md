@@ -96,19 +96,19 @@ single most expensive habit in the plan.
 
 | Creative family | n | Median `er_view` | 95% CI | Mean views |
 |---|---:|---:|---|---:|
-| Static image (Photo, Carousel) | 126 | **22.25%** | 18.47 – 24.68 | 6,905 |
-| Story / interactive | 214 | 11.41% | 9.79 – 13.58 | 24,553 |
-| Short video (Video, Reel, Short, Stitch, Duet) | 362 | 10.91% | 9.92 – 12.49 | 76,509 |
-| Text / long-form | 328 | 8.81% | 7.92 – 10.15 | 12,466 |
-| Live | 85 | 7.97% | 5.86 – 11.21 | 20,671 |
+| Static image (Photo, Carousel) | 126 | **22.25%** | 18.47 – 24.68 | 28,341 |
+| Story / interactive | 214 | 11.41% | 9.79 – 13.58 | 38,094 |
+| Short video (Video, Reel, Short, Stitch, Duet) | 362 | 10.91% | 9.92 – 12.49 | 214,082 |
+| Text / long-form | 328 | 8.81% | 7.92 – 10.15 | 76,440 |
+| Live | 85 | 7.97% | 5.86 – 11.21 | 197,134 |
 
 17 platform-native format labels were folded into 5 cross-platform families first — otherwise a
 "best format" ranking mostly restates which platform owns the label (Reel → Instagram, Tweet → X).
 
 **[Inference / 推断 — treat with care]** Static image leads on a *per-view* basis, which contradicts
 the usual assumption that short video dominates fitness content. The mechanical explanation is the
-denominator: short video attracts ~11× the views of static posts, so a rate divided by a much larger
-view count is smaller by construction. Read it as *"video manufactures the views, static converts
+denominator: short video attracts ~7.6× the mean views of static posts (214,082 vs 28,341), so a rate
+divided by a much larger view count is smaller by construction. Read it as *"video manufactures the views, static converts
 them more efficiently"* — **not** as *"video is ineffective"*. Because the source data is synthetic,
 this ordering must be re-tested on real account data before it drives a creative brief.
 
