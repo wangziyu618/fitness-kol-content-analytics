@@ -63,6 +63,7 @@ import hashlib
 import io
 import json
 import sys
+import time
 import urllib.error
 import urllib.request
 import zipfile
@@ -120,22 +121,38 @@ def sha256_of(path: Path) -> str:
     return h.hexdigest()
 
 
-def download_zip(url: str) -> bytes:
-    """Fetch the dataset bundle, following Kaggle's signed GCS redirect."""
+def download_zip(url: str, attempts: int = 4) -> bytes:
+    """
+    Fetch the dataset bundle, following Kaggle's signed GCS redirect.
+
+    Retries with exponential backoff: the signed URL and the TLS tunnel behind a
+    corporate proxy both fail intermittently, and a first-attempt failure should
+    not make the whole pipeline look broken.
+    """
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    log(f"GET {url}")
-    try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-            payload = resp.read()
-    except urllib.error.HTTPError as exc:  # pragma: no cover - network path
-        raise SystemExit(
-            f"Download failed with HTTP {exc.code}.\n"
-            f"Fallback: kaggle datasets download -d {DATASET['publisher']}/social-media-engagement-dataset"
-        ) from exc
-    except urllib.error.URLError as exc:  # pragma: no cover - network path
-        raise SystemExit(f"Network error: {exc.reason}") from exc
-    log(f"received {len(payload):,} bytes")
-    return payload
+    last: Exception | None = None
+    for i in range(1, attempts + 1):
+        try:
+            log(f"GET {url}  (attempt {i}/{attempts})")
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+                payload = resp.read()
+            if len(payload) < 1024:
+                raise ValueError(f"suspiciously small response ({len(payload)} bytes)")
+            log(f"received {len(payload):,} bytes")
+            return payload
+        except urllib.error.HTTPError as exc:
+            last = exc
+            raise SystemExit(
+                f"Download failed with HTTP {exc.code}.\n"
+                f"Fallback: kaggle datasets download -d "
+                f"{DATASET['publisher']}/social-media-engagement-dataset"
+            ) from exc
+        except (urllib.error.URLError, OSError, ValueError) as exc:
+            last = exc
+            log(f"  transient failure: {exc}")
+            if i < attempts:
+                time.sleep(2 ** i)
+    raise SystemExit(f"Network error after {attempts} attempts: {last}")
 
 
 def extract_csv(payload: bytes) -> str:
@@ -167,18 +184,31 @@ def validate_csv(text: str) -> tuple[int, list[str]]:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Download and pin the source dataset.")
     ap.add_argument("--force", action="store_true", help="re-download even if present")
+    ap.add_argument("--offline", action="store_true",
+                    help="never touch the network; use the committed raw CSV")
     args = ap.parse_args()
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
 
-    if RAW_CSV.exists() and not args.force:
+    if RAW_CSV.exists() and (args.offline or not args.force):
         log(f"cache hit -> {RAW_CSV.relative_to(ROOT)}")
+    elif args.offline and not RAW_CSV.exists():
+        raise SystemExit("--offline given but no cached data/raw CSV exists")
     else:
-        payload = download_zip(DATASET["download_url"])
-        text = extract_csv(payload)
-        rows, _ = validate_csv(text)
-        RAW_CSV.write_text(text, encoding="utf-8")
-        log(f"wrote {RAW_CSV.relative_to(ROOT)} ({rows:,} rows)")
+        try:
+            payload = download_zip(DATASET["download_url"])
+            text = extract_csv(payload)
+            rows, _ = validate_csv(text)
+            RAW_CSV.write_text(text, encoding="utf-8")
+            log(f"wrote {RAW_CSV.relative_to(ROOT)} ({rows:,} rows)")
+        except SystemExit as exc:
+            # The Kaggle endpoint sits behind proxies that intermittently return
+            # 400/502. The raw CSV is committed, so fall back to it rather than
+            # failing the whole pipeline for a transient network fault.
+            if not RAW_CSV.exists():
+                raise
+            log(f"WARNING: download unavailable ({exc}); using the committed raw CSV")
+            log("         re-run without --offline once the network recovers to re-pin")
 
     rows, header = validate_csv(RAW_CSV.read_text(encoding="utf-8"))
 
