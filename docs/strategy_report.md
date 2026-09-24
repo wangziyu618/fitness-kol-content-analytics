@@ -52,7 +52,7 @@ definition instead. *中文：原始数据的互动率字段口径与行业习�
 
 ## 3. Findings · 核心发现
 
-### 3.1 Platform — three different jobs
+### 3.1 Platform — three different jobs · 平台：三种不同的分工
 
 | Platform | n | Median `er_view` | 95% CI | Reach × | Deep rate | Eng / 1k fans |
 |---|---:|---:|---|---:|---:|---:|
@@ -72,7 +72,7 @@ lowest raw interaction rates.
 TikTok for reach volume, LinkedIn + X for considered audiences who save and forward. A single
 "best platform" answer would be wrong for three of these objectives.
 
-### 3.2 Creator tier — flat rate, collapsing efficiency
+### 3.2 Creator tier — flat rate, collapsing efficiency · 达人层级：互动率持平，单位效率坍缩
 
 | Tier | n | Median `er_view` | 95% CI | Eng / 1k fans | Cost / post (CPM $10) | CPE |
 |---|---:|---:|---|---:|---:|---:|
@@ -92,7 +92,7 @@ are priced for reach and brand safety. The finding is that if the objective is i
 fixed budget, the long tail wins decisively and the default "buy the biggest account" reflex is the
 single most expensive habit in the plan.
 
-### 3.3 Creative format — a counter-intuitive result, flagged
+### 3.3 Creative format — a counter-intuitive result, flagged · 创意形式：反直觉结论（已标注）
 
 | Creative family | n | Median `er_view` | 95% CI | Mean views |
 |---|---:|---:|---|---:|
@@ -112,7 +112,7 @@ divided by a much larger view count is smaller by construction. Read it as *"vid
 them more efficiently"* — **not** as *"video is ineffective"*. Because the source data is synthetic,
 this ordering must be re-tested on real account data before it drives a creative brief.
 
-### 3.4 Publishing timing — the honest answer is "no answer"
+### 3.4 Publishing timing — the honest answer is "no answer" · 发布时机：诚实的答案是“无法回答”
 
 Best cell: Thursday 06-11 at 12.18% (n=34). Worst: Sunday 00-05 at 5.00% (n=31). The 28 weekday ×
 day-part cells hold 31–51 posts each. Weekday (8.03%) vs weekend (7.48%) is a 0.55-point gap.
@@ -121,7 +121,7 @@ day-part cells hold 31–51 posts each. Weekday (8.03%) vs weekend (7.48%) is a 
 dataset is too thin to answer, and reporting a spurious "best hour" would be worse than reporting
 nothing. *中文：样本量不足以支撑时段结论，明确说明比给出虚假最佳时段更有价值。*
 
-### 3.5 Secondary signals
+### 3.5 Secondary signals · 次级信号
 
 * **Hashtags:** a weak inverted-U. 6–10 tags → 9.44% pooled `er_view`; 0 tags → 6.09%; 11–20 → 7.33%.
   More tags past ~10 buy nothing. *(n=31 for the zero-tag cell — direction only.)*
@@ -132,7 +132,7 @@ nothing. *中文：样本量不足以支撑时段结论，明确说明比给出�
 
 ## 4. Budget allocation · 预算与投放建议
 
-### 4.1 The one assumption
+### 4.1 The one assumption · 唯一的假设
 
 The dataset has **no spend column**. Rather than invent a price list, cost is modelled from a single
 declared input and then stress-tested:
@@ -146,7 +146,7 @@ CPE = 1 / engagements_per_USD
 Everything else in this section is derived from the data. **The CPM is an assumption; the uplift
 direction survives every value tested, the uplift magnitude does not.**
 
-### 4.2 Unit economics (CPM $10)
+### 4.2 Unit economics (CPM $10) · 单位经济（CPM $10）
 
 | Tier | Cost / post | Mean interactions | Eng / $1k | CPE |
 |---|---:|---:|---:|---:|
@@ -166,7 +166,7 @@ direction survives every value tested, the uplift magnitude does not.**
 Note the split verdict: **Instagram has the best rate, TikTok has the best cost-per-interaction.**
 They answer different questions and both belong in the plan.
 
-### 4.3 Scenarios on a fixed $100,000 envelope
+### 4.3 Scenarios on a fixed $100,000 envelope · 固定 10 万美元预算下的方案对比
 
 | Scenario | Creator-tier split | Expected interactions | vs even split |
 |---|---|---:|---:|

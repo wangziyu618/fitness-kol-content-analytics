@@ -61,7 +61,7 @@
   .sec-q b{font-weight:600}
 
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .grid3{display:grid;grid-template-columns:1.35fr 1fr;gap:20px}
+  .grid3{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
   /* Grid items default to min-width:auto, which stops them shrinking below their
      widest child (a wide table) and blows out the page on narrow screens.
      min-width:0 lets .tbl-wrap's own overflow-x:auto do its job. */
@@ -69,6 +69,8 @@
   .tbl-wrap{max-width:100%}
   .card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 22px 18px;box-shadow:var(--shadow);min-width:0}
   .card h3{font-size:15px;font-weight:600;margin:0 0 2px;letter-spacing:-.01em}
+  /* Chinese gloss sits under each English card title, one step lighter and smaller. */
+  .h3-cn{display:block;font-size:12.5px;font-weight:400;color:var(--ink-2);margin-top:3px;letter-spacing:0}
   .card .sub{font-size:12px;color:var(--ink-2);margin:0 0 16px;line-height:1.5}
   .card .sub em{font-style:normal;color:var(--ink-3)}
 
@@ -84,11 +86,15 @@
 
   /* ---------- tables ---------- */
   table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{text-align:right;padding:9px 8px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  th,td{text-align:right;padding:9px 7px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
   th:first-child,td:first-child{text-align:left}
   thead th{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);font-weight:600;border-bottom:1px solid var(--line)}
   tbody tr:last-child td{border-bottom:none}
   td.num{font-variant-numeric:tabular-nums}
+  /* Chinese gloss under an English column header — keeps columns narrow */
+  .th-cn{display:block;font-weight:400;font-size:11px;letter-spacing:0;text-transform:none;
+         color:var(--ink-3);margin-top:2px}
+  .cn-i{color:var(--ink-3);font-size:11.5px;font-weight:400;margin-left:4px}
   .tbl-wrap{overflow-x:auto}
 
   /* ---------- findings ---------- */
@@ -103,7 +109,7 @@
   /* ---------- tooltip ---------- */
   #tip{position:fixed;pointer-events:none;opacity:0;transform:translate(-50%,-100%);
        background:rgba(29,29,31,.96);color:#fff;border-radius:9px;padding:9px 11px;font-size:12px;
-       line-height:1.5;z-index:999;transition:opacity .1s ease;max-width:280px;
+       line-height:1.5;z-index:999;transition:opacity .1s ease;max-width:330px;
        box-shadow:0 6px 20px rgba(0,0,0,.18)}
   #tip b{font-weight:600}
   #tip .row{display:flex;justify-content:space-between;gap:14px}
@@ -115,11 +121,17 @@
   footer{border-top:1px solid var(--line);background:var(--bg-soft);padding:44px 0 60px;margin-top:20px}
   footer h5{font-size:13px;font-weight:600;margin:0 0 8px}
   footer p,footer li{font-size:12.5px;color:var(--ink-2);line-height:1.7}
+  .foot-cn{display:block;color:var(--ink-3);font-size:12px;margin-top:3px;line-height:1.65}
   footer ul{margin:0;padding-left:18px}
   .foot-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px}
   code{background:rgba(0,0,0,.05);padding:1px 5px;border-radius:4px;font-size:11.5px;
        font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 
+  /* Below ~1100px the 2-column chart+table row leaves the 5-column platform
+     table too little room, so it stacks early. */
+  @media (max-width:1100px){
+    .grid3{grid-template-columns:1fr}
+  }
   @media (max-width:900px){
     .kpis{grid-template-columns:repeat(2,1fr)}
     .grid2,.grid3,.finds,.foot-grid{grid-template-columns:1fr}
@@ -143,7 +155,7 @@
     <div class="brand"><span class="dot"></span><span>Fitness &amp; Sport KOL Analytics</span></div>
     <div class="nav-meta">
       <span id="nav-range"></span>
-      <a id="nav-src" href="#" target="_blank" rel="noopener">Source dataset ↗</a>
+      <a id="nav-src" href="#" target="_blank" rel="noopener">Source dataset 数据源 ↗</a>
     </div>
   </div>
 </header>
@@ -152,7 +164,7 @@
 
   <!-- ===================== HERO ===================== -->
   <div class="hero">
-    <div class="eyebrow">Portfolio Project · Data Analytics &amp; Visualisation</div>
+    <div class="eyebrow">Portfolio Project · Data Analytics &amp; Visualisation · 作品集项目 · 数据分析与可视化</div>
     <h1>Content &amp; KOL marketing analytics for the sport, fitness &amp; wellness vertical</h1>
     <p class="h1-cn">运动 / 健身 / 健康垂类的内容营销与 KOL 营销数据分析看板</p>
     <p class="lede">
@@ -175,14 +187,14 @@
 
     <div class="grid3">
       <div class="card">
-        <h3>Median interaction rate per view, by platform</h3>
+        <h3>Median interaction rate per view, by platform<span class="h3-cn">各平台每 100 次浏览的互动数（中位数）</span></h3>
         <p class="sub">Bars = median <em>er_view</em> (interactions per 100 views). Whiskers = 95% bootstrap CI.
            <em>柱高为中位数互动率，误差线为 95% 自助抽样置信区间；悬停查看均值与样本量。</em></p>
         <div id="c-platform-er"></div>
         <div class="note" id="n-platform"></div>
       </div>
       <div class="card">
-        <h3>What each platform sells</h3>
+        <h3>What each platform sells<span class="h3-cn">各平台卖的是什么：触达、深度还是互动</span></h3>
         <p class="sub">Reach amplification vs. high-intent depth.<br>
           Role: <b>Interaction</b> = leads on rate · <b>Reach</b> = views far exceed own followers ·
           <b>Depth</b> = highest share-and-save rate.
@@ -202,13 +214,13 @@
 
     <div class="grid2">
       <div class="card">
-        <h3>Median interaction rate by creator tier</h3>
+        <h3>Median interaction rate by creator tier<span class="h3-cn">各达人层级的中位互动率</span></h3>
         <p class="sub">Surprisingly flat across tiers — scale does not buy a higher rate.
            <em>各层级中位数互动率差异很小，规模并不直接带来更高互动率。</em></p>
         <div id="c-tier-er"></div>
       </div>
       <div class="card">
-        <h3>Interactions per 1,000 fans</h3>
+        <h3>Interactions per 1,000 fans<span class="h3-cn">每千粉丝带来的互动数</span></h3>
         <p class="sub">The real differentiator: small accounts activate their audience far harder.
            <em>真正的差异点：小体量达人对粉丝的激活能力远强于头部。</em></p>
         <div id="c-tier-eff"></div>
@@ -216,7 +228,7 @@
     </div>
 
     <div class="card" style="margin-top:20px">
-      <h3>Audience-scale view — a continuous cut on follower bands</h3>
+      <h3>Audience-scale view — a continuous cut on follower bands<span class="h3-cn">按粉丝量分箱的连续视角（交叉验证）</span></h3>
       <p class="sub">The tier column in this dataset is heavily skewed (see the flag below), so fan-base size is
         re-cut into continuous bands as a cross-check. <em>由于层级字段分布失衡，这里用粉丝量分箱做交叉验证。</em></p>
       <div class="tbl-wrap"><table id="t-band"></table></div>
@@ -232,13 +244,13 @@
 
     <div class="grid2">
       <div class="card">
-        <h3>Median interaction rate by creative family</h3>
+        <h3>Median interaction rate by creative family<span class="h3-cn">五类创意族群的中位互动率</span></h3>
         <p class="sub">17 platform-native labels folded into 5 cross-platform families.
            <em>原生格式标签（Reel / Tweet / Stitch…）已合并为 5 个跨平台族群，避免“格式差异”实为“平台差异”。</em></p>
         <div id="c-family"></div>
       </div>
       <div class="card">
-        <h3>Secondary signals</h3>
+        <h3>Secondary signals<span class="h3-cn">次级信号：标签数量与认证状态</span></h3>
         <p class="sub">Hashtag load and verified status. <em>标签数量分箱与认证状态对互动率的影响。</em></p>
         <div id="c-hashtag"></div>
         <div class="note" id="n-verified"></div>
@@ -255,19 +267,19 @@
 
     <div class="grid2">
       <div class="card">
-        <h3>Weekday × day-part heatmap</h3>
+        <h3>Weekday × day-part heatmap<span class="h3-cn">星期 × 时段热力图</span></h3>
         <p class="sub">Pooled interaction rate per 100 views. <em>单元格为汇总互动率（%），悬停查看样本量与深度互动率。</em></p>
         <div id="c-heat"></div>
       </div>
       <div class="card">
-        <h3>Hour-of-day profile</h3>
+        <h3>Hour-of-day profile<span class="h3-cn">按发布小时的互动率曲线</span></h3>
         <p class="sub">Pooled interaction rate by publish hour. <em>按发布小时的汇总互动率曲线。</em></p>
         <div id="c-hour"></div>
       </div>
     </div>
 
     <div class="card" style="margin-top:20px">
-      <h3>24-month volume and efficiency trend</h3>
+      <h3>24-month volume and efficiency trend<span class="h3-cn">24 个月的发帖量与互动效率趋势</span></h3>
       <p class="sub">Monthly posting volume (bars) against pooled interaction rate (line).
          <em>月度发帖量（柱）与汇总互动率（线）。</em></p>
       <div id="c-month"></div>
@@ -282,7 +294,7 @@
       platforms? <br><b>业务问题</b> — 预算固定时，如何在达人层级与平台之间分配？</p>
 
     <div class="card" style="margin-bottom:20px">
-      <h3>Modelled unit economics</h3>
+      <h3>Modelled unit economics<span class="h3-cn">建模后的单位经济：单帖成本、单次互动成本与每千美元产出</span></h3>
       <p class="sub" id="s-econ"></p>
       <div class="tbl-wrap"><table id="t-econ-tier"></table></div>
       <div class="tbl-wrap" style="margin-top:18px"><table id="t-econ-plat"></table></div>
@@ -290,7 +302,7 @@
 
     <div class="grid2">
       <div class="card">
-        <h3>Allocation scenarios — creator tier</h3>
+        <h3>Allocation scenarios — creator tier<span class="h3-cn">达人层级的预算分配方案对比</span></h3>
         <p class="sub">Three ways to split the same envelope: Status quo / Even split / Efficiency-weighted.
            Right-hand number = expected interactions; below it, change vs. an even split.
            <em>同一预算下的三种分配方式：现状结构 / 平均分配 / 效率加权；右侧为预期互动量，其下为相对平均分配的增减。</em></p>
@@ -298,7 +310,7 @@
         <div class="legend" id="l-alloc-tier"></div>
       </div>
       <div class="card">
-        <h3>Allocation scenarios — platform</h3>
+        <h3>Allocation scenarios — platform<span class="h3-cn">平台维度的预算分配方案对比</span></h3>
         <p class="sub">Three ways to split the same envelope: Status quo / Even split / Efficiency-weighted.
            Right-hand number = expected interactions; below it, change vs. an even split.
            <em>同一预算下的三种分配方式：现状结构 / 平均分配 / 效率加权；右侧为预期互动量，其下为相对平均分配的增减。</em></p>
@@ -308,7 +320,7 @@
     </div>
 
     <div class="card" style="margin-top:20px">
-      <h3>Sensitivity to the CPM assumption</h3>
+      <h3>Sensitivity to the CPM assumption<span class="h3-cn">对 CPM 假设的敏感性检验</span></h3>
       <p class="sub">The dataset has no spend column, so cost is modelled from one declared CPM. Re-running the whole
         allocation at CPM 5 / 10 / 15 / 25 tests whether the recommendation survives the assumption.
         <em>数据集不含花费字段，成本由单一 CPM 假设推导；此处检验结论对该假设是否稳健。</em></p>
@@ -325,14 +337,14 @@
 
     <div class="grid2">
       <div class="card">
-        <h3>Median difference vs. all other categories</h3>
+        <h3>Median difference vs. all other categories<span class="h3-cn">垂类与大盘其他类目的中位数差异</span></h3>
         <p class="sub">Point = median difference (vertical − benchmark); bar = 95% bootstrap CI. An interval crossing
           zero means the two are <b>not</b> distinguishable.
           <em>点为中位数差值，误差线为 95% 置信区间；区间跨越 0 即差异不显著。</em></p>
         <div id="c-vb"></div>
       </div>
       <div class="card">
-        <h3>Inside the vertical</h3>
+        <h3>Inside the vertical<span class="h3-cn">垂类内部细分对比</span></h3>
         <p class="sub">Fitness vs Sports vs Health. <em>垂类内部三个细分内容的表现对比。</em></p>
         <div id="c-seg"></div>
       </div>
@@ -413,6 +425,9 @@ document.addEventListener('mouseout', e=>{
   if(t && !t.contains(e.relatedTarget)) tip.style.opacity = 0;
 });
 
+// Rough advance-width estimate: CJK glyphs are about one em wide, Latin about 0.55 em.
+function tw(s, fs){ let w=0; for(const ch of String(s)) w += /[\u3000-\u9fff\uff00-\uffef]/.test(ch) ? fs : fs*0.55; return w; }
+
 function niceMax(v){                       // round an axis maximum to something tidy
   if(v<=0) return 1;
   const p = Math.pow(10, Math.floor(Math.log10(v)));
@@ -428,7 +443,7 @@ function axisY(max, steps){
    Chart: vertical bars with 95% CI whiskers
    ========================================================================== */
 function vbarCI(host, opts){
-  const rows = opts.rows, W = 720, padL=44, padR=12, padT=26, padB=52;
+  const rows = opts.rows, W = 720, padL=44, padR=12, padT=34, padB=52;
   const H = opts.height || 320;
   const iw = W-padL-padR, ih = H-padT-padB;
   const max = niceMax(Math.max(...rows.map(r=>r.ci_high||r.v)) * 1.14);
@@ -463,7 +478,7 @@ function vbarCI(host, opts){
   s += `<defs><pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
           <rect width="6" height="6" fill="#c9c9ce"/>
           <line x1="0" y1="0" x2="0" y2="6" stroke="#fff" stroke-width="2.4"/></pattern></defs>`;
-  s += `<text x="${padL-9}" y="${padT-10}" text-anchor="end" font-size="11" fill="${INK3}">${esc(opts.unit||'%')}</text>`;
+  s += `<text x="${padL-9}" y="${padT-12}" text-anchor="end" font-size="11" fill="${INK3}">${esc(opts.unit||'%')}</text>`;
   s += `</svg>`;
   host.innerHTML = s;
 }
@@ -485,8 +500,8 @@ function hbar(host, opts){
     const fill = r.low_confidence ? 'url(#hatch2)' : (r.color || PAL[0]);
     s += `<g data-tip="${esc(r.tip)}">`;
     s += `<rect x="0" y="${cy-rh/2}" width="${W}" height="${rh}" fill="transparent"/>`;
-    s += `<text x="${padL-12}" y="${cy+4}" text-anchor="end" font-size="12.5" fill="${INK}">${esc(r.label)}</text>`;
-    if(r.sub) s += `<text x="${padL-12}" y="${cy+17}" text-anchor="end" font-size="10.5" fill="${INK3}">${esc(r.sub)}</text>`;
+    s += `<text x="${padL-12}" y="${cy+3}" text-anchor="end" font-size="12.5" fill="${INK}">${esc(r.label)}</text>`;
+    if(r.sub) s += `<text x="${padL-12}" y="${cy+21}" text-anchor="end" font-size="10.5" fill="${INK3}">${esc(r.sub)}</text>`;
     s += `<rect x="${padL}" y="${cy-bh/2}" width="${w}" height="${bh}" rx="3" fill="${fill}"/>`;
     if(r.ci_low!=null && r.ci_high!=null){
       const x1 = padL + (r.ci_low/max)*iw, x2 = padL + (r.ci_high/max)*iw;
@@ -509,7 +524,8 @@ function hbar(host, opts){
    ========================================================================== */
 function heat(host, opts){
   const yKeys = opts.yKeys, xKeys = opts.xKeys, get = opts.get;
-  const W = 720, padL = 92, padT = 30, padR = 10, padB = 10;
+  // padL is wide enough for a bilingual row label ("Wednesday 周三").
+  const W = 720, padL = opts.padL || 124, padT = 30, padR = 10, padB = 10;
   const rh = opts.rowH || 44, cw = (W - padL - padR)/xKeys.length;
   const H = padT + yKeys.length*rh + padB;
   const vals = []; yKeys.forEach(a=>xKeys.forEach(b=>{const v=get(a,b); if(v!=null) vals.push(v.v);}));
@@ -546,7 +562,7 @@ function heat(host, opts){
    Chart: line / area
    ========================================================================== */
 function line(host, opts){
-  const rows = opts.rows, W=720, padL=44, padR=16, padT=24, padB=42;
+  const rows = opts.rows, W=720, padL=44, padR=16, padT=32, padB=42;
   const H = opts.height || 230, iw = W-padL-padR, ih = H-padT-padB;
   const max = niceMax(Math.max(...rows.map(r=>r.v))*1.12), min = 0;
   const x = i => padL + (rows.length===1?iw/2:(iw*i/(rows.length-1)));
@@ -566,7 +582,7 @@ function line(host, opts){
     if(i % (opts.labelEvery||3) === 0 || i === rows.length-1)
       s += `<text x="${x(i)}" y="${H-padB+20}" text-anchor="middle" font-size="11" fill="${INK3}">${esc(r.label)}</text>`;
   });
-  s += `<text x="${padL-9}" y="${padT-10}" text-anchor="end" font-size="11" fill="${INK3}">${esc(opts.unit||'%')}</text>`;
+  s += `<text x="${padL-9}" y="${padT-12}" text-anchor="end" font-size="11" fill="${INK3}">${esc(opts.unit||'%')}</text>`;
   s += `</svg>`;
   host.innerHTML = s;
 }
@@ -577,7 +593,7 @@ function line(host, opts){
 function combo(host, opts){
   // padT is deep enough to hold the two axis-unit captions above the top gridline
   // without them poking outside the viewBox.
-  const rows = opts.rows, W=720, padL=46, padR=52, padT=36, padB=42;
+  const rows = opts.rows, W=720, padL=64, padR=80, padT=36, padB=42;
   const H = opts.height || 258, iw=W-padL-padR, ih=H-padT-padB;
   const bmax = niceMax(Math.max(...rows.map(r=>r.bar))*1.1);
   const lmax = niceMax(Math.max(...rows.map(r=>r.line))*1.15);
@@ -617,7 +633,7 @@ function stack(host, opts){
   const scenarios = opts.scenarios, keys = opts.keys, colors = opts.colors;
   // padL is sized so the longest row label ("Efficiency") still fits inside the
   // viewBox when right-anchored at padL-12 — otherwise it spills out of the card.
-  const W = 720, padL = 150, padR = 92, padT = 10, padB = 10;
+  const W = 720, padL = 150, padR = 118, padT = 10, padB = 10;
   const rh = opts.rowH || 46, H = padT + padB + scenarios.length*rh;
   const iw = W - padL - padR, bh = Math.min(26, rh*0.55);
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
@@ -656,7 +672,7 @@ function ciplot(host, opts){
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
   // zero line
   s += `<line x1="${x(0)}" y1="${padT-12}" x2="${x(0)}" y2="${H-padB+6}" stroke="${INK}" stroke-width="1.4" stroke-dasharray="3 3"/>`;
-  s += `<text x="${x(0)}" y="${H-padB+24}" text-anchor="middle" font-size="11" fill="${INK2}">0 — no difference</text>`;
+  s += `<text x="${x(0)}" y="${H-padB+24}" text-anchor="middle" font-size="11" fill="${INK2}">0 — no difference 无差异</text>`;
   for(let i=-2;i<=2;i++){
     const v = pad*i/2;
     s += `<text x="${x(v)}" y="${padT-14}" text-anchor="middle" font-size="10.5" fill="${INK3}">${nf(v,1)}</text>`;
@@ -674,7 +690,7 @@ function ciplot(host, opts){
     s += `<circle cx="${x(r.v)}" cy="${cy}" r="5" fill="${col}"/>`;
     // The verdict tag prefers to sit right of the interval, but flips to the left
     // of it when that would push it past the viewBox edge.
-    const tagW = r.right.length * 6.6 + 6;
+    const tagW = tw(r.right, 11.5) + 6;
     let tx = x(r.ci_high) + 12, anchor = 'start';
     if (tx + tagW > W - padR) { tx = x(r.ci_low) - 12; anchor = 'end'; }
     s += `<text x="${tx}" y="${cy+4}" text-anchor="${anchor}" font-size="11.5" fill="${INK2}">${esc(r.right)}</text>`;
@@ -686,7 +702,9 @@ function ciplot(host, opts){
 
 /* ============================== tables =================================== */
 function table(host, head, rows){
-  let h = '<thead><tr>' + head.map(c=>`<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>';
+  // Headers are authored as static markup (they carry a <span class="th-cn"> gloss),
+  // so they are not escaped here; data cells are escaped at each call site.
+  let h = '<thead><tr>' + head.map(c=>`<th>${c}</th>`).join('') + '</tr></thead><tbody>';
   rows.forEach(r=>{
     h += '<tr>' + r.map((c,i)=>`<td class="${i?'num':''}">${c}</td>`).join('') + '</tr>';
   });
@@ -697,6 +715,20 @@ function table(host, head, rows){
    Render everything
    ========================================================================== */
 const M = DATA.meta, OV = DATA.overview;
+
+/* ---------- Chinese glosses for categorical labels ----------
+   Every English category shown on the board gets a Chinese gloss, so the deck
+   reads in either language. Charts render it on a second line (sub) so the SVG
+   gutter never has to grow past the viewBox.                                  */
+const TIER_CN = {'Nano':'纳米级','Micro':'微型','Mid-tier':'中腰部','Macro':'头部'};
+const FAM_CN  = {'Static image':'图文静态','Story / interactive':'故事 / 互动',
+                 'Short video':'短视频','Text / long-form':'文字长内容','Live':'直播'};
+const SEG_CN  = {'Fitness':'健身','Sports':'运动','Health':'健康','Other':'其他'};
+const DAY_CN  = {'Monday':'周一','Tuesday':'周二','Wednesday':'周三','Thursday':'周四',
+                 'Friday':'周五','Saturday':'周六','Sunday':'周日'};
+const SLOT_CN = {'06-11 Morning':'早间','12-17 Afternoon':'午后','18-23 Evening':'晚间',
+                 '00-05 Late night':'深夜'};
+const ROLE_CN = {'Interaction':'互动领先','Reach':'触达放大','Depth':'深度互动'};
 
 /* ---- nav ---- */
 $('nav-range').textContent = `${M.date_min} → ${M.date_max} · n=${nf0(M.rows_vertical_rate_valid)}`;
@@ -720,25 +752,30 @@ vbarCI($('c-platform-er'), {
   height: 340, unit:'%', aria:'Median interaction rate by platform',
   rows: DATA.platform.map((r,i)=>({
     label: r.platform, v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
-    low_confidence: r.low_confidence, color: PAL[0], sub: `n=${r.n}`,
+    low_confidence: r.low_confidence, color: PAL[0], sub: `n=${r.n} 条`,
     tip: tipHTML(r.platform, [
-      ['Median er_view', nf(r.median_er_view,2)+'%'],
-      ['95% CI', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
-      ['Mean er_view', nf(r.mean_er_view,2)+'%'],
-      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
-      ['Deep rate (shares+saves)', nf(r.mean_deep_rate,2)+'%'],
-      ['Sample size', nf0(r.n)+' posts'],
+      ['Median er_view 中位互动率', nf(r.median_er_view,2)+'%'],
+      ['95% CI 置信区间', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
+      ['Mean er_view 均值互动率', nf(r.mean_er_view,2)+'%'],
+      ['Pooled er_view 汇总互动率', nf(r.er_view_pooled,2)+'%'],
+      ['Deep rate 深度互动率（分享+收藏）', nf(r.mean_deep_rate,2)+'%'],
+      ['Sample size', nf0(r.n)+' 条'],
     ])
   }))
 });
 table($('t-platform'),
-  ['Platform','Med. ER','Reach','Depth','Role'],
+  ['Platform<span class="th-cn">平台</span>',
+   'Med. ER<span class="th-cn">中位互动率</span>',
+   'Reach<span class="th-cn">触达倍数</span>',
+   'Depth<span class="th-cn">深度互动率</span>',
+   'Role<span class="th-cn">角色定位</span>'],
   DATA.platform.map(r=>{
     let role = 'Depth';
     if(r.mean_reach_ratio >= 1) role = 'Reach';
     if(r.er_view_pooled >= 20) role = 'Interaction';
     return [esc(r.platform), nf(r.median_er_view,1)+'%', nf(r.mean_reach_ratio,2)+'×',
-            nf(r.mean_deep_rate,1)+'%', role];
+            nf(r.mean_deep_rate,1)+'%',
+            role + '<span class="cn-i">' + (ROLE_CN[role]||'') + '</span>'];
   })
 );
 const ig = DATA.platform.find(p=>p.platform==='Instagram');
@@ -763,30 +800,36 @@ vbarCI($('c-tier-er'), {
   height: 300, unit:'%',
   rows: tierSorted.map(r=>({
     label: r.influencer_tier, v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
-    low_confidence: r.low_confidence, color: PAL[0], sub: `n=${r.n}`,
+    low_confidence: r.low_confidence, color: PAL[0], sub: `n=${r.n} 条`,
     tip: tipHTML(r.influencer_tier, [
-      ['Median er_view', nf(r.median_er_view,2)+'%'],
-      ['95% CI', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
-      ['Mean followers', nf0(r.mean_followers)],
-      ['Sample size', nf0(r.n)+' posts'],
-    ], r.low_confidence ? 'Low confidence: n < 50, excluded from the budget plan' : '')
+      ['Median er_view 中位互动率', nf(r.median_er_view,2)+'%'],
+      ['95% CI 置信区间', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
+      ['Mean followers 平均粉丝量', nf0(r.mean_followers)],
+      ['Sample size', nf0(r.n)+' 条'],
+    ], r.low_confidence ? '样本量不足（n < 50），已排除出预算方案' : '')
   }))
 });
 hbar($('c-tier-eff'), {
   padL: 96, rowH: 46,
   rows: tierSorted.map(r=>({
-    label: r.influencer_tier, v: r.mean_eng_per_1k_fans, low_confidence: r.low_confidence,
+    label: r.influencer_tier, sub: TIER_CN[r.influencer_tier] || '',
+    v: r.mean_eng_per_1k_fans, low_confidence: r.low_confidence,
     color: PAL[1], fmt: nf0(r.mean_eng_per_1k_fans),
     tip: tipHTML(r.influencer_tier, [
-      ['Interactions / 1k fans', nf0(r.mean_eng_per_1k_fans)],
-      ['Mean followers', nf0(r.mean_followers)],
-      ['Reach ratio', nf(r.mean_reach_ratio,2)+'×'],
-      ['Sample size', nf0(r.n)+' posts'],
-    ], r.low_confidence ? 'Low confidence: n < 50, excluded from the budget plan' : '')
+      ['Interactions / 1k fans 每千粉丝互动', nf0(r.mean_eng_per_1k_fans)],
+      ['Mean followers 平均粉丝量', nf0(r.mean_followers)],
+      ['Reach ratio 触达放大倍数', nf(r.mean_reach_ratio,2)+'×'],
+      ['Sample size', nf0(r.n)+' 条'],
+    ], r.low_confidence ? '样本量不足（n < 50），已排除出预算方案' : '')
   }))
 });
 table($('t-band'),
-  ['Follower band','Posts','Median ER','Eng / 1k fans','Reach ×','Pooled ER'],
+  ['Follower band<span class="th-cn">粉丝量级</span>',
+   'Posts<span class="th-cn">样本量</span>',
+   'Median ER<span class="th-cn">中位互动率</span>',
+   'Eng / 1k fans<span class="th-cn">每千粉丝互动</span>',
+   'Reach ×<span class="th-cn">触达倍数</span>',
+   'Pooled ER<span class="th-cn">汇总互动率</span>'],
   DATA.follower_band.map(r=>[esc(r.follower_band), nf0(r.n), nf(r.median_er_view,2)+'%',
     nf0(r.mean_eng_per_1k_fans), nf(r.mean_reach_ratio,2)+'×', nf(r.er_view_pooled,2)+'%'])
 );
@@ -795,26 +838,27 @@ table($('t-band'),
 hbar($('c-family'), {
   padL: 150, rowH: 46,
   rows: DATA.content_family.map(r=>({
-    label: r.content_family, v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
+    label: r.content_family, sub: FAM_CN[r.content_family] || '',
+    v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
     low_confidence: r.low_confidence, color: PAL[0],
     tip: tipHTML(r.content_family, [
-      ['Median er_view', nf(r.median_er_view,2)+'%'],
-      ['95% CI', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
-      ['Deep rate', nf(r.mean_deep_rate,2)+'%'],
-      ['Save rate', nf(r.mean_save_rate,2)+'%'],
-      ['Share rate', nf(r.mean_share_rate,2)+'%'],
-      ['Sample size', nf0(r.n)+' posts'],
+      ['Median er_view 中位互动率', nf(r.median_er_view,2)+'%'],
+      ['95% CI 置信区间', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
+      ['Deep rate 深度互动率', nf(r.mean_deep_rate,2)+'%'],
+      ['Save rate 收藏率', nf(r.mean_save_rate,2)+'%'],
+      ['Share rate 分享率', nf(r.mean_share_rate,2)+'%'],
+      ['Sample size', nf0(r.n)+' 条'],
     ])
   }))
 });
 hbar($('c-hashtag'), {
-  padL: 74, rowH: 42,
+  padL: 116, rowH: 42,
   rows: DATA.hashtag.map(r=>({
-    label: r.hashtag_bucket + ' tags', v: r.er_view_pooled, color: PAL[1],
-    tip: tipHTML('Hashtags: '+r.hashtag_bucket, [
-      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
-      ['Deep rate', nf(r.deep_rate_pooled,2)+'%'],
-      ['Sample size', nf0(r.n)+' posts'],
+    label: r.hashtag_bucket + ' 个标签', v: r.er_view_pooled, color: PAL[1],
+    tip: tipHTML('Hashtags 标签数 ' + r.hashtag_bucket, [
+      ['Pooled er_view 汇总互动率', nf(r.er_view_pooled,2)+'%'],
+      ['Deep rate 深度互动率', nf(r.deep_rate_pooled,2)+'%'],
+      ['Sample size', nf0(r.n)+' 条'],
     ])
   }))
 });
@@ -833,14 +877,14 @@ const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sun
 const cellMap = {};
 DATA.timing_weekday_slot.forEach(r=>{ cellMap[r.weekday+'|'+r.time_slot] = r; });
 heat($('c-heat'), {
-  yKeys: days, xKeys: slots, rowH: 44,
+  yKeys: days.map(d=>d + ' ' + DAY_CN[d]), xKeys: slots.map(s=>s + ' ' + SLOT_CN[s]), rowH: 44,
   get: (a,b)=>{
     const r = cellMap[a+'|'+b]; if(!r) return null;
-    return { v: r.er_view_pooled, tip: tipHTML(`${a} · ${b}`, [
-      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
-      ['Deep rate', nf(r.deep_rate_pooled,2)+'%'],
-      ['Mean views', nf0(r.mean_views)],
-      ['Sample size', nf0(r.n)+' posts'],
+    return { v: r.er_view_pooled, tip: tipHTML(`${a} ${DAY_CN[a]} · ${b} ${SLOT_CN[b]}`, [
+      ['Pooled er_view 汇总互动率', nf(r.er_view_pooled,2)+'%'],
+      ['Deep rate 深度互动率', nf(r.deep_rate_pooled,2)+'%'],
+      ['Mean views 平均浏览量', nf0(r.mean_views)],
+      ['Sample size', nf0(r.n)+' 条'],
     ])};
   }
 });
@@ -848,22 +892,22 @@ line($('c-hour'), {
   height: 250, labelEvery: 3,
   rows: DATA.timing_hour.map(r=>({
     label: String(r.hour).padStart(2,'0'), v: r.er_view_pooled,
-    tip: tipHTML(`Hour ${String(r.hour).padStart(2,'0')}:00`, [
-      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
-      ['Deep rate', nf(r.deep_rate_pooled,2)+'%'],
-      ['Sample size', nf0(r.n)+' posts'],
+    tip: tipHTML(`${String(r.hour).padStart(2,'0')}:00 发布`, [
+      ['Pooled er_view 汇总互动率', nf(r.er_view_pooled,2)+'%'],
+      ['Deep rate 深度互动率', nf(r.deep_rate_pooled,2)+'%'],
+      ['Sample size', nf0(r.n)+' 条'],
     ])
   }))
 });
 combo($('c-month'), {
-  height: 250, labelEvery: 3, barUnit:'posts', lineUnit:'%',
+  height: 250, labelEvery: 3, barUnit:'posts 帖数', lineUnit:'% 互动率',
   rows: DATA.monthly.map(r=>({
     label: r.year_month.slice(2), bar: r.n, line: r.er_view_pooled,
     tip: tipHTML(r.year_month, [
-      ['Posts', nf0(r.n)],
-      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
-      ['Views', nf0(r.total_views)],
-      ['Engagement', nf0(r.total_engagement)],
+      ['Posts 发帖量', nf0(r.n)],
+      ['Pooled er_view 汇总互动率', nf(r.er_view_pooled,2)+'%'],
+      ['Views 浏览量', nf0(r.total_views)],
+      ['Engagement 互动量', nf0(r.total_engagement)],
     ])
   }))
 });
@@ -873,22 +917,33 @@ const BT = DATA.budget.by_tier, BP = DATA.budget.by_platform;
 $('s-econ').innerHTML =
   `Cost is modelled as <code>${esc(DATA.budget.assumption.formula)}</code> at
    CPM = $${nf(DATA.budget.assumption.cpm_usd_per_1k_followers,0)} per 1,000 followers, against a fixed
-   $${nf0(DATA.budget.assumption.budget_envelope_usd)} envelope. <em>成本按「粉丝量 × CPM ÷ 1000」估算（CPM = $10），
-   总预算固定为 $100,000；数据集不含花费字段，这是模型中唯一的外生假设。</em>`;
+   $${nf0(DATA.budget.assumption.budget_envelope_usd)} envelope. Rows tagged <span class="flag">样本不足</span>
+   (low sample size) are excluded from the recommended split.
+   <em>成本按「粉丝量 × CPM ÷ 1000」估算（CPM = $10），总预算固定为 $100,000；数据集不含花费字段，
+   这是模型中唯一的外生假设。标记「样本不足」（low sample size）的分组不参与推荐分配。</em>`;
 
+// The low-confidence chip stays short (Chinese only); its English meaning is
+// spelled out in the card caption above the tables.
 function econTable(host, b, keyLabel){
   table(host,
-    [keyLabel,'Posts','Mean fans','Cost / post','Mean interactions','Eng / $1k','CPE'],
+    [keyLabel,
+     'Posts<span class="th-cn">样本量</span>',
+     'Mean fans<span class="th-cn">平均粉丝量</span>',
+     'Cost / post<span class="th-cn">单帖成本</span>',
+     'Mean interactions<span class="th-cn">平均互动量</span>',
+     'Eng / $1k<span class="th-cn">每千美元互动</span>',
+     'CPE<span class="th-cn">单次互动成本</span>'],
     b.groups.map(g=>[
-      esc(g.key) + (g.low_confidence ? ' <span class="flag">low n</span>' : ''),
+      esc(g.key) + (TIER_CN[g.key] ? '<span class="th-cn">'+TIER_CN[g.key]+'</span>' : '')
+        + (g.low_confidence ? ' <span class="flag">样本不足</span>' : ''),
       nf0(g.n), nf0(g.mean_followers), '$'+nf(g.cost_per_post,0),
       nf0(g.mean_engagement), nf0(g.engagements_per_1k_usd),
       '$'+nf(g.cpe_usd,3)
     ])
   );
 }
-econTable($('t-econ-tier'), BT, 'Creator tier');
-econTable($('t-econ-plat'), BP, 'Platform');
+econTable($('t-econ-tier'), BT, 'Creator tier<span class="th-cn">达人层级</span>');
+econTable($('t-econ-plat'), BP, 'Platform<span class="th-cn">平台</span>');
 
 function allocChart(hostId, legendId, b){
   const keys = b.groups.map(g=>g.key);
@@ -896,37 +951,47 @@ function allocChart(hostId, legendId, b){
   const scene = b.scenarios.filter(s=>s.name!=='efficiency_share_unfiltered');
   // Row labels stay short English; the Chinese names live in the card sub-caption
   // so nothing has to be squeezed into the SVG gutter.
-  const labels = {structure_share:'Status quo', even_share:'Even split',
-                  efficiency_share:'Efficiency'};
+  const labels = {structure_share:'Status quo 现状结构', even_share:'Even split 平均分配',
+                  efficiency_share:'Efficiency 效率加权'};
   stack($(hostId), {
     rowH: 52, keys, colors,
     scenarios: scene.map(s=>({
       label: labels[s.name] || s.name,
       right: nf0(s.expected_engagement/1000)+'k',
-      sub: (s.uplift_vs_even_pct>0?'+':'')+nf(s.uplift_vs_even_pct,0)+'% vs even',
+      sub: '较平均分配 '+(s.uplift_vs_even_pct>0?'+':'')+nf(s.uplift_vs_even_pct,0)+'%',
       parts: keys.map(k=>{
         const d = s.detail.find(x=>x.key===k);
         const g = b.groups.find(x=>x.key===k);
         return { value: d?d.share_pct:0, tip: tipHTML(k, [
-          ['Share of envelope', nf(d?d.share_pct:0,1)+'%'],
-          ['Spend', '$'+nf0(d?d.spend_usd:0)],
-          ['Posts bought', nf(d?d.posts_bought:1)],
-          ['Expected interactions', nf0(d?d.expected_engagement:0)],
-          ['CPE', '$'+nf(g.cpe_usd,3)],
+          ['Share of envelope 预算占比', nf(d?d.share_pct:0,1)+'%'],
+          ['Spend 分配花费', '$'+nf0(d?d.spend_usd:0)],
+          ['Posts bought 可购买帖数', nf(d?d.posts_bought:1)],
+          ['Expected interactions 预期互动量', nf0(d?d.expected_engagement:0)],
+          ['CPE 单次互动成本', '$'+nf(g.cpe_usd,3)],
         ])};
       })
     }))
   });
   $(legendId).innerHTML = b.groups.map((g,i)=>
-    `<span><i style="background:${colors[i]}"></i>${esc(g.key)}${g.low_confidence?' (low n)':''}</span>`).join('');
+    `<span><i style="background:${colors[i]}"></i>${esc(g.key)}`
+    + `${TIER_CN[g.key] ? '<span class="cn-i">'+TIER_CN[g.key]+'</span>' : ''}`
+    + `${g.low_confidence?'<span class="cn-i">（样本不足）</span>':''}</span>`).join('');
 }
 allocChart('c-alloc-tier','l-alloc-tier', BT);
 allocChart('c-alloc-plat','l-alloc-plat', BP);
 
 table($('t-sens'),
-  ['CPM (USD)','Best tier','Eng / $1k','CPE','Efficiency plan','Even split','Uplift'],
+  ['CPM (USD)<span class="th-cn">千次曝光成本假设</span>',
+   'Best tier<span class="th-cn">最优层级</span>',
+   'Eng / $1k<span class="th-cn">每千美元互动</span>',
+   'CPE<span class="th-cn">单次互动成本</span>',
+   'Efficiency plan<span class="th-cn">效率加权方案</span>',
+   'Even split<span class="th-cn">平均分配</span>',
+   'Uplift<span class="th-cn">提升幅度</span>'],
   DATA.budget.cpm_sensitivity_tier.map(r=>[
-    '$'+nf(r.cpm,0), esc(r.best_group), nf0(r.best_engagements_per_1k_usd), '$'+nf(r.best_cpe_usd,3),
+    '$'+nf(r.cpm,0),
+    esc(r.best_group) + (TIER_CN[r.best_group] ? '<span class="th-cn">'+TIER_CN[r.best_group]+'</span>' : ''),
+    nf0(r.best_engagements_per_1k_usd), '$'+nf(r.best_cpe_usd,3),
     nf0(r.efficiency_expected_engagement), nf0(r.even_expected_engagement),
     (r.uplift_pct>0?'+':'')+nf(r.uplift_pct,0)+'%'
   ])
@@ -947,14 +1012,14 @@ ciplot($('c-vb'), {
     return {
       label, sub: cn,
       v: d.difference, ci_low: d.ci_low, ci_high: d.ci_high,
-      right: sig ? 'significant' : 'not significant',
+      right: sig ? 'significant 显著' : 'not significant 不显著',
       tip: tipHTML(label, [
-        ['Vertical median', nf(d.vertical_median,3)+(unit==='%'?'%':'')],
-        ['Benchmark median', nf(d.benchmark_median,3)+(unit==='%'?'%':'')],
-        ['Difference', (d.difference>0?'+':'')+nf(d.difference,3)],
-        ['95% CI', `${nf(d.ci_low,3)} – ${nf(d.ci_high,3)}`],
-        ['n (vertical / benchmark)', `${nf0(d.n_vertical)} / ${nf0(d.n_benchmark)}`],
-        ['Verdict', sig ? 'distinguishable at 95%' : 'NOT distinguishable at 95%'],
+        ['Vertical median 垂类中位数', nf(d.vertical_median,3)+(unit==='%'?'%':'')],
+        ['Benchmark median 大盘中位数', nf(d.benchmark_median,3)+(unit==='%'?'%':'')],
+        ['Difference 差值', (d.difference>0?'+':'')+nf(d.difference,3)],
+        ['95% CI 置信区间', `${nf(d.ci_low,3)} – ${nf(d.ci_high,3)}`],
+        ['n 样本量（垂类 / 大盘）', `${nf0(d.n_vertical)} / ${nf0(d.n_benchmark)}`],
+        ['Verdict 结论', sig ? '在 95% 水平可区分' : '在 95% 水平不可区分'],
       ])
     };
   })
@@ -962,14 +1027,14 @@ ciplot($('c-vb'), {
 hbar($('c-seg'), {
   padL: 92, rowH: 46,
   rows: DATA.segment.map(r=>({
-    label: r.vertical_segment, v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
-    color: PAL[1],
+    label: r.vertical_segment, sub: SEG_CN[r.vertical_segment] || '',
+    v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high, color: PAL[1],
     tip: tipHTML(r.vertical_segment, [
-      ['Median er_view', nf(r.median_er_view,2)+'%'],
-      ['95% CI', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
-      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
+      ['Median er_view 中位互动率', nf(r.median_er_view,2)+'%'],
+      ['95% CI 置信区间', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
+      ['Pooled er_view 汇总互动率', nf(r.er_view_pooled,2)+'%'],
       ['Eng / 1k fans', nf0(r.mean_eng_per_1k_fans)],
-      ['Sample size', nf0(r.n)+' posts'],
+      ['Sample size', nf0(r.n)+' 条'],
     ])
   }))
 });
@@ -979,7 +1044,7 @@ const F = DATA.findings;
 $('finds').innerHTML = F.map(f=>`
   <div class="find">
     <div class="tag">${esc(f.tag)}</div>
-    <h4>${f.title}</h4>
+    <h4>${f.title}<span class="h3-cn">${f.title_cn}</span></h4>
     ${f.body.map(p=>`<p>${p}</p>`).join('')}
     <p class="cn">${f.cn}</p>
   </div>`).join('');

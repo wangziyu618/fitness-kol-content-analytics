@@ -76,7 +76,8 @@ def build_findings(d: dict) -> list[dict]:
 
     return [
         {
-            "tag": "Finding 01 · Platform",
+            "tag": "Finding 01 · Platform 平台",
+            "title_cn": "Instagram 互动领先，YouTube / TikTok 负责触达而非互动",
             "title": f"Instagram leads on interaction; YouTube and TikTok are reach plays, "
                      f"not engagement plays",
             "body": [
@@ -101,7 +102,8 @@ def build_findings(d: dict) -> list[dict]:
                   f"LinkedIn 与 X 的深度互动率最高。建议按角色分工而非相互替代。"
         },
         {
-            "tag": "Finding 02 · Creator tier",
+            "tag": "Finding 02 · Creator tier 达人层级",
+            "title_cn": "规模买不到更高的互动率，只买得到更低的单位粉丝产出",
             "title": "Scale does not buy a better interaction rate — it buys a worse one per fan",
             "body": [
                 f"Median interaction rate is almost flat across tiers: Nano {n1(tier['Nano']['median_er_view'])}%, "
@@ -127,7 +129,8 @@ def build_findings(d: dict) -> list[dict]:
                   f"注意：Nano 仅 {tier['Nano']['n']} 条样本，已标记为低置信并排除出预算方案。"
         },
         {
-            "tag": "Finding 03 · Creative",
+            "tag": "Finding 03 · Creative 创意形式",
+            "title_cn": "静态图文的互动率高于短视频——一个需要谨慎对待的结论",
             "title": "Static images outperform short video in this corpus — a result to treat with care",
             "body": [
                 f"Folded into cross-platform families, the ranking is Static image "
@@ -154,7 +157,8 @@ def build_findings(d: dict) -> list[dict]:
                   f"且源数据为合成数据，投放前须用真实账号数据复核。"
         },
         {
-            "tag": "Finding 04 · Timing",
+            "tag": "Finding 04 · Timing 发布时机",
+            "title_cn": "不存在可靠的发布窗口，可见差异都落在噪声范围内",
             "title": "No posting window is reliably better — the visible gaps sit inside the noise",
             "body": [
                 f"The best cell is {top_slot['weekday']} {top_slot['time_slot']} at "
@@ -179,7 +183,8 @@ def build_findings(d: dict) -> list[dict]:
                   f"个百分点。结论：不建议据此制定发布排期，这是本数据集样本量不足以回答的问题。"
         },
         {
-            "tag": "Finding 05 · Budget",
+            "tag": "Finding 05 · Budget 预算分配",
+            "title_cn": "同样预算按效率重新分配，可多换来约 %s 的互动" % n0(scen['efficiency_share']['uplift_vs_even_pct']),
             "title": f"Re-weighting the same envelope toward efficiency is worth roughly "
                      f"+{n0(scen['efficiency_share']['uplift_vs_even_pct'])}% interactions",
             "body": [
@@ -215,7 +220,8 @@ def build_findings(d: dict) -> list[dict]:
                   f"实际投放需给单一层级设上限、保留头部达人的曝光与品牌安全位，并预留测试预算。"
         },
         {
-            "tag": "Finding 06 · Vertical",
+            "tag": "Finding 06 · Vertical 垂类对比",
+            "title_cn": "运动健康内容与其他类目在统计上不可区分",
             "title": "Sport / fitness / wellness content is statistically indistinguishable from "
                      "every other category here",
             "body": [
@@ -246,20 +252,26 @@ def build_method_notes(d: dict) -> list[str]:
     return [
         f"<b>Primary metric</b> — <code>{m['metrics']['primary']}</code>: "
         f"interactions per 100 views. The raw file's own <code>Engagement_Rate</code> column is "
-        f"<i>follower</i>-based and excludes Saves, so it is not comparable and was kept only for audit.",
+        f"<i>follower</i>-based and excludes Saves, so it is not comparable and was kept only for audit."
+        f"<span class='foot-cn'>主指标：每 100 次浏览的互动数。原始文件的 Engagement_Rate 基于粉丝数且不含收藏，与主口径不可比，仅作审计留存。</span>",
         f"<b>Central tendency</b> — {m['metrics']['central']}. Engagement distributions are strongly "
-        f"right-skewed (p95 is far above the median), so medians are reported, with means in tooltips.",
+        f"right-skewed (p95 is far above the median), so medians are reported, with means in tooltips."
+        f"<span class='foot-cn'>集中趋势：互动分布强烈右偏，因此主用中位数，均值放在悬浮提示中。</span>",
         f"<b>Sample</b> — {n0(m['rows_raw'])} raw posts → {n0(m['rows_rate_valid'])} rate-valid "
         f"(dropped {n0(m['rows_dropped_invalid_rate'])} rows where interactions exceeded views, which "
         f"cannot happen on a real platform) → <b>{n0(m['rows_vertical_rate_valid'])}</b> in the vertical "
-        f"({m['vertical_definition']}).",
+        f"({m['vertical_definition']})."
+        f"<span class='foot-cn'>样本链路：原始 → 比率有效 → 垂类子集；互动量大于浏览量的行物理上不可能，已剔除。</span>",
         f"<b>Groups below n={m['metrics']['low_confidence_threshold']}</b> are greyed out on the charts and "
-        f"excluded from the recommended budget split.",
+        f"excluded from the recommended budget split."
+        f"<span class='foot-cn'>样本量低于阈值的分组在图中置灰，且不参与推荐分配。</span>",
         "<b>Cost model</b> — the dataset has no spend field. Cost is modelled as "
         "<code>mean_followers × CPM / 1000</code>; the CPM is a declared assumption and the whole "
-        "allocation is re-run at CPM 5 / 10 / 15 / 25 in the sensitivity table.",
+        "allocation is re-run at CPM 5 / 10 / 15 / 25 in the sensitivity table."
+        "<span class='foot-cn'>成本模型：数据集无花费字段，成本＝平均粉丝量 × CPM ÷ 1000；CPM 为显式假设，并已做 5 / 10 / 15 / 25 的敏感性检验。</span>",
         "<b>Content families</b> — 17 platform-native format labels are folded into 5 cross-platform "
-        "families so a “best format” result is not just restating which platform owns the label.",
+        "families so a “best format” result is not just restating which platform owns the label."
+        "<span class='foot-cn'>创意族群：17 种平台原生格式合并为 5 个跨平台族群，避免“最佳格式”其实只是“某平台专属标签”。</span>",
     ]
 
 
@@ -269,22 +281,29 @@ def build_limitations(d: dict) -> list[str]:
     return [
         f"<b>The data is synthetic.</b> {m['dataset']['provenance_note']} Every figure is a valid "
         f"statistical statement <i>about this dataset</i>; none of them is evidence about real "
-        f"platform behaviour. Recommendations are framed as method, not as market truth.",
+        f"platform behaviour. Recommendations are framed as method, not as market truth."
+        f"<span class='foot-cn'>数据为合成数据：所有结论仅对该数据集成立，不构成真实平台行为的证据；建议按方法论而非市场事实使用。</span>",
         f"<b>Creator-tier distribution is severely skewed:</b> {p['tier_skew_warning']} "
-        f"The Nano tier cannot support a conclusion and is excluded from the budget plan.",
+        f"The Nano tier cannot support a conclusion and is excluded from the budget plan."
+        f"<span class='foot-cn'>达人层级分布严重失衡：Nano 组不足以支撑结论，已排除出预算方案。</span>",
         f"<b>Timing cells are thin.</b> The weekday × day-part grid averages "
-        f"{n0(d['meta']['rows_vertical_rate_valid'] // 28)} posts per cell, so no posting-window claim is made.",
+        f"{n0(d['meta']['rows_vertical_rate_valid'] // 28)} posts per cell, so no posting-window claim is made."
+        f"<span class='foot-cn'>时间格子样本稀薄：不据此给出任何发布窗口结论。</span>",
         "<b>Cost is assumed, not observed.</b> No spend, contract or conversion data exists in the "
         "source, so CPE and ROI are modelled from one CPM. Uplift direction is stable across the "
-        "sensitivity grid; uplift magnitude is not.",
+        "sensitivity grid; uplift magnitude is not."
+        "<span class='foot-cn'>成本是假设而非观测：无花费 / 合同 / 转化数据，CPE 与 ROI 由单一 CPM 推导；提升方向稳健，提升幅度不稳健。</span>",
         "<b>No causal claim.</b> This is observational, cross-sectional post-level data with no "
         "holdout, so “efficiency-weighted allocation returns +X%” is a counterfactual projection "
-        "under a linear cost model, not a measured experiment result.",
+        "under a linear cost model, not a measured experiment result."
+        "<span class='foot-cn'>不做因果推断：观测性截面数据、无对照组，“效率加权可提升 X%” 是线性成本模型下的反事实推算，不是实测实验结果。</span>",
         "<b>Engagement ≠ business outcome.</b> Nothing here measures clicks, sign-ups, retention or "
-        "revenue; interactions are a proxy for attention, not for value.",
+        "revenue; interactions are a proxy for attention, not for value."
+        "<span class='foot-cn'>互动不等于业务结果：未测量点击、注册、留存或收入，互动只是注意力的代理指标。</span>",
         f"<b>Time window:</b> {m['date_min']} to {m['date_max']}. Platform algorithms and creative "
         f"norms move faster than that; the monthly series is flat, which is itself a sign the "
-        f"generator does not model seasonality.",
+        f"generator does not model seasonality."
+        f"<span class='foot-cn'>时间窗口有限：平台算法与创意范式变化快于此区间；月度序列平坦，本身即说明数据生成器未建模季节性。</span>",
     ]
 
 

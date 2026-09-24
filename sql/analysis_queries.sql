@@ -25,6 +25,7 @@
 
 -- @name:q01_overview
 -- Headline KPI block: whole corpus -> vertical -> benchmark.
+-- 中文：核心 KPI 区块——全量 → 垂类 → 大盘基准。
 SELECT
     CASE WHEN is_vertical = 1 THEN 'vertical' ELSE 'benchmark' END AS scope,
     COUNT(*)                                            AS posts,
@@ -44,6 +45,7 @@ GROUP BY is_vertical;
 
 -- @name:q02_platform
 -- Q1 · Which platform earns attention in the vertical?
+-- 中文：垂类内容在哪个平台的互动效率最高？
 -- median ER (primary), pooled rates and volume per platform.
 WITH base AS (
     SELECT platform, er_view,
@@ -74,6 +76,7 @@ ORDER BY median_er_view DESC;
 
 -- @name:q03_tier
 -- Q2 · Which creator tier delivers the best interaction per view?
+-- 中文：哪个达人层级的单位浏览互动产出最高？
 WITH base AS (
     SELECT influencer_tier, er_view,
            ROW_NUMBER() OVER (PARTITION BY influencer_tier ORDER BY er_view) AS rn,
@@ -103,6 +106,7 @@ ORDER BY t.tier_rank;
 
 -- @name:q04_content_family
 -- Q3 · Which creative family works? (17 native labels folded into 5 families)
+-- 中文：哪类创意形式最有效？（17 种原生格式标签已归并为 5 个跨平台族群）
 WITH base AS (
     SELECT content_family, er_view,
            ROW_NUMBER() OVER (PARTITION BY content_family ORDER BY er_view) AS rn,
@@ -131,6 +135,7 @@ ORDER BY median_er_view DESC;
 
 -- @name:q05_content_type_detail
 -- Same cut on the raw 17 native labels, for drill-down in the report appendix.
+-- 中文：保留 17 种原始格式标签的明细口径，供报告附录下钻。
 SELECT content_type,
        COUNT(*)                                              AS n,
        ROUND(100.0 * SUM(engagement_total) / SUM(views), 4)   AS er_view_pooled,
@@ -144,6 +149,7 @@ ORDER BY er_view_pooled DESC;
 
 -- @name:q06_timing_weekday_slot
 -- Q4 · When to publish: 7 weekdays x 4 day-parts (28 cells, ~40 posts each).
+-- 中文：何时发布？7 个星期 × 4 个时段共 28 格，每格约 40 条样本。
 SELECT weekday,
        CASE WHEN weekday = 'Monday'    THEN 1 WHEN weekday = 'Tuesday'  THEN 2
             WHEN weekday = 'Wednesday' THEN 3 WHEN weekday = 'Thursday' THEN 4
@@ -162,6 +168,7 @@ ORDER BY weekday_no, time_slot;
 
 -- @name:q07_timing_hour
 -- Hour-of-day profile (24 buckets, pooled rate so thin cells stay readable).
+-- 中文：按小时分布（24 个桶，用汇总口径以免样本稀薄）。
 SELECT hour,
        COUNT(*)                                              AS n,
        ROUND(100.0 * SUM(engagement_total) / SUM(views), 4)   AS er_view_pooled,
@@ -183,7 +190,7 @@ GROUP BY is_weekend;
 
 
 -- @name:q09_budget_tier
--- Q5 · Budget model inputs by tier. Cost is NOT in the dataset: the runner
+-- Q5 · Budget model inputs by tier (预算模型的层级输入). Cost is NOT in the dataset: the runner
 -- applies an explicit CPM assumption (see scripts/03_analysis.py, CPM_DEFAULT).
 SELECT influencer_tier                                       AS influencer_tier,
        tier_rank                                             AS tier_rank,
@@ -213,6 +220,7 @@ ORDER BY n DESC;
 
 -- @name:q11_segment
 -- Inside the vertical: Fitness vs Sports vs Health.
+-- 中文：垂类内部细分——健身 / 运动 / 健康的对比。
 WITH base AS (
     SELECT vertical_segment, er_view,
            ROW_NUMBER() OVER (PARTITION BY vertical_segment ORDER BY er_view) AS rn,
@@ -237,6 +245,7 @@ ORDER BY median_er_view DESC;
 
 -- @name:q12_hashtag
 -- Does hashtag volume still buy reach?
+-- 中文：标签数量是否仍能带来触达？
 SELECT hashtag_bucket                                        AS hashtag_bucket,
        CASE hashtag_bucket WHEN '0' THEN 0 WHEN '1-5' THEN 1 WHEN '6-10' THEN 2
                            WHEN '11-20' THEN 3 WHEN '21-30' THEN 4 ELSE 5 END AS bucket_no,
@@ -275,6 +284,7 @@ GROUP BY is_verified;
 
 -- @name:q15_follower_band
 -- Complementary cut to the skewed tier column: a continuous fan-base split.
+-- 中文：层级字段分布失衡，用连续的粉丝量分箱做交叉验证。
 WITH base AS (
     SELECT follower_band, er_view,
            ROW_NUMBER() OVER (PARTITION BY follower_band ORDER BY er_view) AS rn,
