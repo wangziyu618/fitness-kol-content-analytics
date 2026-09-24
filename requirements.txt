@@ -1,0 +1,17 @@
+# This project intentionally has NO third-party dependencies.
+#
+# The whole pipeline — acquisition, cleaning, feature engineering, SQL analysis,
+# bootstrap inference, budget modelling and dashboard rendering — runs on a bare
+# CPython 3.9+ standard library (csv, json, sqlite3, statistics, random, urllib,
+# zipfile, hashlib, datetime, pathlib).
+#
+# Rationale:
+#   1. Reproducibility — a reviewer can run `python scripts/run_all.py` with no
+#      install step and no version-conflict or offline-install failure mode.
+#   2. Auditability   — the analytical layer is real SQL in sql/analysis_queries.sql,
+#      runnable in any SQLite shell, so numbers can be checked without Python.
+#   3. Deliverability — charts are hand-built SVG, so the dashboard is a single
+#      self-contained HTML file with no CDN or bundled library.
+#
+# Install nothing. Just run:
+#     python scripts/run_all.py

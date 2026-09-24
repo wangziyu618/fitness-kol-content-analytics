@@ -1,0 +1,22 @@
+# --- transient / debug artefacts -------------------------------------------
+output/_*
+*.log
+*.tmp
+
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- editors / OS -----------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# --- NOTE -------------------------------------------------------------------
+# data/raw/, data/processed/ and output/analysis_results.json are intentionally
+# COMMITTED, not ignored. A reviewer should be able to inspect the cleaned data,
+# the SQLite warehouse and every table behind the dashboard without running the
+# pipeline — and then reproduce them identically with `python scripts/run_all.py`.

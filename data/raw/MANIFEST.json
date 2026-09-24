@@ -1,0 +1,41 @@
+{
+  "dataset": "Social Media Engagement Dataset",
+  "publisher": "aviral342",
+  "permalink": "https://www.kaggle.com/datasets/aviral342/social-media-engagement-dataset",
+  "download_url": "https://www.kaggle.com/api/v1/datasets/download/aviral342/social-media-engagement-dataset",
+  "license": "CC0 1.0 (Public Domain Dedication)",
+  "grain": "one row = one post",
+  "provenance_note": "Kaggle card states the records are synthetically generated and platform-realistic. See docs/strategy_report.md 'Limitations'.",
+  "vertical_categories": [
+    "Fitness",
+    "Sports",
+    "Health"
+  ],
+  "file": "social_media_engagement_dataset.csv",
+  "sha256": "23ecc8c6526eafe8a6619b64d1eee1758c8375844a601a91177b6ff16fa85448",
+  "bytes": 670822,
+  "rows": 5000,
+  "columns": [
+    "Post_ID",
+    "Timestamp",
+    "Platform",
+    "Content_Type",
+    "Category",
+    "Likes",
+    "Comments",
+    "Shares",
+    "Views",
+    "Saves",
+    "Follower_Count",
+    "Engagement_Rate",
+    "Hour_of_Day",
+    "Day_of_Week",
+    "Hashtag_Count",
+    "Content_Length",
+    "Sentiment",
+    "Influencer_Tier",
+    "Has_Media",
+    "Is_Verified"
+  ],
+  "retrieved_at_utc": "2026-09-24T07:08:11+00:00"
+}

@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sport · Fitness · Wellness — Content &amp; KOL Marketing Analytics</title>
+<meta name="description" content="Interactive analysis dashboard for sport / fitness / wellness content and KOL marketing, built on a single public CC0 dataset.">
+<style>
+  :root{
+    --bg:#ffffff; --bg-soft:#f5f5f7; --bg-card:#ffffff;
+    --ink:#1d1d1f; --ink-2:#6e6e73; --ink-3:#9a9aa0;
+    --line:#e6e6e9; --line-soft:#f0f0f2;
+    --accent:#0071e3; --accent-soft:#eaf2fd;
+    --warn:#b25000; --warn-soft:#fdf1e6;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.04);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI","Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; font-size:15px; line-height:1.6;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);
+    backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:52px}
+  .brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;letter-spacing:-.01em}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none}
+  .nav-meta{font-size:12px;color:var(--ink-2);display:flex;gap:16px;align-items:center}
+  .nav-meta a{color:var(--accent);text-decoration:none}
+  .nav-meta a:hover{text-decoration:underline}
+
+  /* ---------- hero ---------- */
+  .hero{padding:72px 0 44px}
+  .eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:14px}
+  h1{font-size:40px;line-height:1.12;letter-spacing:-.025em;font-weight:600;margin:0 0 8px;max-width:22ch}
+  .h1-cn{font-size:19px;font-weight:500;color:var(--ink-2);letter-spacing:-.01em;margin:0 0 20px}
+  .lede{font-size:16px;color:var(--ink-2);max-width:74ch;margin:0}
+
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:38px 0 8px}
+  .kpi{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px}
+  .kpi .v{font-size:27px;font-weight:600;letter-spacing:-.02em;line-height:1.15}
+  .kpi .v small{font-size:14px;font-weight:500;color:var(--ink-2);letter-spacing:0}
+  .kpi .l{font-size:12px;color:var(--ink-2);margin-top:6px;font-weight:500}
+  .kpi .cn{font-size:11px;color:var(--ink-3);margin-top:2px}
+
+  /* ---------- sections ---------- */
+  section{padding:56px 0;border-top:1px solid var(--line-soft)}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+  .sec-no{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.08em}
+  h2{font-size:26px;font-weight:600;letter-spacing:-.02em;margin:0}
+  .sec-cn{font-size:14px;color:var(--ink-2);margin:0 0 6px}
+  .sec-q{font-size:14px;color:var(--ink);margin:0 0 26px;max-width:78ch}
+  .sec-q b{font-weight:600}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .grid3{display:grid;grid-template-columns:1.35fr 1fr;gap:20px}
+  /* Grid items default to min-width:auto, which stops them shrinking below their
+     widest child (a wide table) and blows out the page on narrow screens.
+     min-width:0 lets .tbl-wrap's own overflow-x:auto do its job. */
+  .grid2 > *,.grid3 > *,.finds > *,.kpis > *{min-width:0}
+  .tbl-wrap{max-width:100%}
+  .card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 22px 18px;box-shadow:var(--shadow);min-width:0}
+  .card h3{font-size:15px;font-weight:600;margin:0 0 2px;letter-spacing:-.01em}
+  .card .sub{font-size:12px;color:var(--ink-2);margin:0 0 16px;line-height:1.5}
+  .card .sub em{font-style:normal;color:var(--ink-3)}
+
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  text{font-family:inherit}
+
+  /* ---------- legend / notes ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;color:var(--ink-2)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  .note{font-size:12px;color:var(--ink-2);margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);line-height:1.6}
+  .flag{display:inline-flex;align-items:center;gap:5px;background:var(--warn-soft);color:var(--warn);
+        font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;vertical-align:1px}
+
+  /* ---------- tables ---------- */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:right;padding:9px 8px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);font-weight:600;border-bottom:1px solid var(--line)}
+  tbody tr:last-child td{border-bottom:none}
+  td.num{font-variant-numeric:tabular-nums}
+  .tbl-wrap{overflow-x:auto}
+
+  /* ---------- findings ---------- */
+  .finds{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .find{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .find .tag{font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+  .find h4{margin:8px 0 6px;font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.35}
+  .find p{margin:0;font-size:13px;color:var(--ink-2);line-height:1.65}
+  .find p + p{margin-top:8px}
+  .find .cn{color:var(--ink-3);font-size:12px}
+
+  /* ---------- tooltip ---------- */
+  #tip{position:fixed;pointer-events:none;opacity:0;transform:translate(-50%,-100%);
+       background:rgba(29,29,31,.96);color:#fff;border-radius:9px;padding:9px 11px;font-size:12px;
+       line-height:1.5;z-index:999;transition:opacity .1s ease;max-width:280px;
+       box-shadow:0 6px 20px rgba(0,0,0,.18)}
+  #tip b{font-weight:600}
+  #tip .row{display:flex;justify-content:space-between;gap:14px}
+  #tip .row span:last-child{font-variant-numeric:tabular-nums}
+  #tip .ttl{font-weight:600;margin-bottom:4px;font-size:12.5px}
+  #tip .muted{color:#b9b9be}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);background:var(--bg-soft);padding:44px 0 60px;margin-top:20px}
+  footer h5{font-size:13px;font-weight:600;margin:0 0 8px}
+  footer p,footer li{font-size:12.5px;color:var(--ink-2);line-height:1.7}
+  footer ul{margin:0;padding-left:18px}
+  .foot-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  code{background:rgba(0,0,0,.05);padding:1px 5px;border-radius:4px;font-size:11.5px;
+       font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+  @media (max-width:900px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .grid2,.grid3,.finds,.foot-grid{grid-template-columns:1fr}
+    h1{font-size:31px}
+    .hero{padding:48px 0 32px}
+    .nav-meta span:first-child{display:none}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 18px}
+    .card{padding:18px 16px 16px}
+    h1{font-size:26px}
+    .kpi .v{font-size:23px}
+    section{padding:44px 0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand"><span class="dot"></span><span>Fitness &amp; Sport KOL Analytics</span></div>
+    <div class="nav-meta">
+      <span id="nav-range"></span>
+      <a id="nav-src" href="#" target="_blank" rel="noopener">Source dataset ↗</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===================== HERO ===================== -->
+  <div class="hero">
+    <div class="eyebrow">Portfolio Project · Data Analytics &amp; Visualisation</div>
+    <h1>Content &amp; KOL marketing analytics for the sport, fitness &amp; wellness vertical</h1>
+    <p class="h1-cn">运动 / 健身 / 健康垂类的内容营销与 KOL 营销数据分析看板</p>
+    <p class="lede">
+      One public dataset, one reproducible pipeline: acquisition → cleaning → multidimensional SQL analysis →
+      interactive board → budget recommendation. Every figure below is recomputable from
+      <code>sql/analysis_queries.sql</code> against the shipped SQLite warehouse.
+      <br><br>
+      从公开数据集出发的完整分析链路：数据获取 → 清洗与特征工程 → 多维分析（SQL）→ 可视化看板 → 投放策略建议。所有数字均可由仓库中的 SQL 重新算出。
+    </p>
+    <div class="kpis" id="kpis"></div>
+  </div>
+
+  <!-- ===================== 01 PLATFORM ===================== -->
+  <section>
+    <div class="sec-head"><span class="sec-no">01</span><h2>Platform performance</h2></div>
+    <p class="sec-cn">平台表现：运动健康垂类内容在六大平台的互动效率对比</p>
+    <p class="sec-q"><b>Question</b> — Where does a fitness brand actually earn interaction per view, and what kind of
+      attention does each platform sell: depth, reach, or conversation?
+      <br><b>业务问题</b> — 运动健康内容的互动效率在哪个平台最高？各平台卖的是“深度”“触达”还是“讨论”？</p>
+
+    <div class="grid3">
+      <div class="card">
+        <h3>Median interaction rate per view, by platform</h3>
+        <p class="sub">Bars = median <em>er_view</em> (interactions per 100 views). Whiskers = 95% bootstrap CI.
+           <em>柱高为中位数互动率，误差线为 95% 自助抽样置信区间；悬停查看均值与样本量。</em></p>
+        <div id="c-platform-er"></div>
+        <div class="note" id="n-platform"></div>
+      </div>
+      <div class="card">
+        <h3>What each platform sells</h3>
+        <p class="sub">Reach amplification vs. high-intent depth.<br>
+          Role: <b>Interaction</b> = leads on rate · <b>Reach</b> = views far exceed own followers ·
+          <b>Depth</b> = highest share-and-save rate.
+          <br><em>触达放大系数与深度互动率的组合决定平台角色：Interaction＝互动领先，Reach＝触达放大，Depth＝深度互动。</em></p>
+        <div class="tbl-wrap"><table id="t-platform"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 02 TIER ===================== -->
+  <section>
+    <div class="sec-head"><span class="sec-no">02</span><h2>Creator tier &amp; audience scale</h2></div>
+    <p class="sec-cn">达人层级：不同粉丝量级达人的互动效率与粉丝激活能力</p>
+    <p class="sec-q"><b>Question</b> — Do bigger creators justify bigger fees? Compare the interaction rate (quality of
+      attention) with interactions per 1,000 fans (efficiency of the fan base).
+      <br><b>业务问题</b> — 头部达人是否配得上更高的报价？需同时看“互动率”与“每千粉丝产出”。</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Median interaction rate by creator tier</h3>
+        <p class="sub">Surprisingly flat across tiers — scale does not buy a higher rate.
+           <em>各层级中位数互动率差异很小，规模并不直接带来更高互动率。</em></p>
+        <div id="c-tier-er"></div>
+      </div>
+      <div class="card">
+        <h3>Interactions per 1,000 fans</h3>
+        <p class="sub">The real differentiator: small accounts activate their audience far harder.
+           <em>真正的差异点：小体量达人对粉丝的激活能力远强于头部。</em></p>
+        <div id="c-tier-eff"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Audience-scale view — a continuous cut on follower bands</h3>
+      <p class="sub">The tier column in this dataset is heavily skewed (see the flag below), so fan-base size is
+        re-cut into continuous bands as a cross-check. <em>由于层级字段分布失衡，这里用粉丝量分箱做交叉验证。</em></p>
+      <div class="tbl-wrap"><table id="t-band"></table></div>
+    </div>
+  </section>
+
+  <!-- ===================== 03 CREATIVE ===================== -->
+  <section>
+    <div class="sec-head"><span class="sec-no">03</span><h2>Creative format &amp; secondary signals</h2></div>
+    <p class="sec-cn">内容形式：17 种平台原生格式归并为 5 个跨平台创意族群后再比较</p>
+    <p class="sec-q"><b>Question</b> — Which creative family earns interaction, and do hashtags / verification still move
+      the needle? <br><b>业务问题</b> — 哪类创意形式互动效率最高？标签数量与认证是否仍有效？</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Median interaction rate by creative family</h3>
+        <p class="sub">17 platform-native labels folded into 5 cross-platform families.
+           <em>原生格式标签（Reel / Tweet / Stitch…）已合并为 5 个跨平台族群，避免“格式差异”实为“平台差异”。</em></p>
+        <div id="c-family"></div>
+      </div>
+      <div class="card">
+        <h3>Secondary signals</h3>
+        <p class="sub">Hashtag load and verified status. <em>标签数量分箱与认证状态对互动率的影响。</em></p>
+        <div id="c-hashtag"></div>
+        <div class="note" id="n-verified"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 04 TIMING ===================== -->
+  <section>
+    <div class="sec-head"><span class="sec-no">04</span><h2>Publishing timing</h2></div>
+    <p class="sec-cn">发布时间：星期 × 时段的热力分布，以及小时级与月度趋势</p>
+    <p class="sec-q"><b>Question</b> — Is there a posting window worth scheduling around?
+      <br><b>业务问题</b> — 是否存在值得排期的发布窗口？</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Weekday × day-part heatmap</h3>
+        <p class="sub">Pooled interaction rate per 100 views. <em>单元格为汇总互动率（%），悬停查看样本量与深度互动率。</em></p>
+        <div id="c-heat"></div>
+      </div>
+      <div class="card">
+        <h3>Hour-of-day profile</h3>
+        <p class="sub">Pooled interaction rate by publish hour. <em>按发布小时的汇总互动率曲线。</em></p>
+        <div id="c-hour"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>24-month volume and efficiency trend</h3>
+      <p class="sub">Monthly posting volume (bars) against pooled interaction rate (line).
+         <em>月度发帖量（柱）与汇总互动率（线）。</em></p>
+      <div id="c-month"></div>
+    </div>
+  </section>
+
+  <!-- ===================== 05 BUDGET ===================== -->
+  <section>
+    <div class="sec-head"><span class="sec-no">05</span><h2>Budget allocation</h2></div>
+    <p class="sec-cn">预算分配：基于 CPM 假设的每美元互动产出模型与三种分配方案对比</p>
+    <p class="sec-q"><b>Question</b> — Given a fixed envelope, how should spend be split across creator tiers and
+      platforms? <br><b>业务问题</b> — 预算固定时，如何在达人层级与平台之间分配？</p>
+
+    <div class="card" style="margin-bottom:20px">
+      <h3>Modelled unit economics</h3>
+      <p class="sub" id="s-econ"></p>
+      <div class="tbl-wrap"><table id="t-econ-tier"></table></div>
+      <div class="tbl-wrap" style="margin-top:18px"><table id="t-econ-plat"></table></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Allocation scenarios — creator tier</h3>
+        <p class="sub">Three ways to split the same envelope: Status quo / Even split / Efficiency-weighted.
+           Right-hand number = expected interactions; below it, change vs. an even split.
+           <em>同一预算下的三种分配方式：现状结构 / 平均分配 / 效率加权；右侧为预期互动量，其下为相对平均分配的增减。</em></p>
+        <div id="c-alloc-tier"></div>
+        <div class="legend" id="l-alloc-tier"></div>
+      </div>
+      <div class="card">
+        <h3>Allocation scenarios — platform</h3>
+        <p class="sub">Three ways to split the same envelope: Status quo / Even split / Efficiency-weighted.
+           Right-hand number = expected interactions; below it, change vs. an even split.
+           <em>同一预算下的三种分配方式：现状结构 / 平均分配 / 效率加权；右侧为预期互动量，其下为相对平均分配的增减。</em></p>
+        <div id="c-alloc-plat"></div>
+        <div class="legend" id="l-alloc-plat"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <h3>Sensitivity to the CPM assumption</h3>
+      <p class="sub">The dataset has no spend column, so cost is modelled from one declared CPM. Re-running the whole
+        allocation at CPM 5 / 10 / 15 / 25 tests whether the recommendation survives the assumption.
+        <em>数据集不含花费字段，成本由单一 CPM 假设推导；此处检验结论对该假设是否稳健。</em></p>
+      <div class="tbl-wrap"><table id="t-sens"></table></div>
+    </div>
+  </section>
+
+  <!-- ===================== 06 VERTICAL ===================== -->
+  <section>
+    <div class="sec-head"><span class="sec-no">06</span><h2>Is the vertical actually different?</h2></div>
+    <p class="sec-cn">垂类对比：运动健康内容与其他类目是否存在统计上可辨识的差异</p>
+    <p class="sec-q"><b>Question</b> — Does sport / fitness / wellness content behave differently from the rest of the
+      corpus, or is any gap just noise? <br><b>业务问题</b> — 垂类内容是否真的与大盘不同，还是差异只是噪声？</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Median difference vs. all other categories</h3>
+        <p class="sub">Point = median difference (vertical − benchmark); bar = 95% bootstrap CI. An interval crossing
+          zero means the two are <b>not</b> distinguishable.
+          <em>点为中位数差值，误差线为 95% 置信区间；区间跨越 0 即差异不显著。</em></p>
+        <div id="c-vb"></div>
+      </div>
+      <div class="card">
+        <h3>Inside the vertical</h3>
+        <p class="sub">Fitness vs Sports vs Health. <em>垂类内部三个细分内容的表现对比。</em></p>
+        <div id="c-seg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 07 FINDINGS ===================== -->
+  <section>
+    <div class="sec-head"><span class="sec-no">07</span><h2>Findings &amp; recommendations</h2></div>
+    <p class="sec-cn">核心发现与可执行建议 · 推断性内容均已标注</p>
+    <div class="finds" id="finds"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <h5>Method &amp; metric definitions · 口径说明</h5>
+      <ul id="f-method"></ul>
+    </div>
+    <div>
+      <h5>Limitations · 局限性</h5>
+      <ul id="f-limits"></ul>
+    </div>
+  </div>
+  <div class="wrap" style="margin-top:26px">
+    <p id="f-provenance"></p>
+  </div>
+</footer>
+
+<div id="tip"></div>
+
+<script>
+/* ==========================================================================
+   Data injected by scripts/04_build_dashboard.py
+   ========================================================================== */
+const DATA = /*__DATA__*/;
+
+/* ============================== helpers ================================== */
+const $ = id => document.getElementById(id);
+const PAL = ['#1d1d1f','#0071e3','#5f9ede','#9cc6f0','#c5dcf7','#e3eefb'];
+const ACCENT = '#0071e3';
+const INK = '#1d1d1f', INK2 = '#6e6e73', INK3 = '#9a9aa0', LINE = '#e6e6e9';
+
+const nf = (v,d=1)=> v==null||isNaN(v) ? '—'
+  : Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const nf0 = v => v==null||isNaN(v) ? '—' : Math.round(v).toLocaleString('en-US');
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function tipHTML(title, rows, foot){
+  let h = `<div class="ttl">${esc(title)}</div>`;
+  (rows||[]).forEach(r=>{
+    h += `<div class="row"><span class="${r[2]?'muted':''}">${esc(r[0])}</span><span>${esc(r[1])}</span></div>`;
+  });
+  if(foot) h += `<div class="muted" style="margin-top:4px">${esc(foot)}</div>`;
+  return h;
+}
+const tip = $('tip');
+document.addEventListener('mouseover', e=>{
+  const t = e.target.closest('[data-tip]');
+  if(!t) return;
+  tip.innerHTML = t.getAttribute('data-tip');
+  tip.style.opacity = 1;
+});
+document.addEventListener('mousemove', e=>{
+  if(tip.style.opacity == 1){
+    const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = e.clientX, y = e.clientY - pad;
+    x = Math.min(Math.max(x, w/2 + 8), window.innerWidth - w/2 - 8);
+    if(y - h < 8) y = e.clientY + h + pad;
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  }
+});
+document.addEventListener('mouseout', e=>{
+  const t = e.target.closest('[data-tip]');
+  if(t && !t.contains(e.relatedTarget)) tip.style.opacity = 0;
+});
+
+function niceMax(v){                       // round an axis maximum to something tidy
+  if(v<=0) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v/p;
+  const m = n<=1?1:n<=1.5?1.5:n<=2?2:n<=2.5?2.5:n<=3?3:n<=4?4:n<=5?5:n<=6?6:n<=8?8:10;
+  return m*p;
+}
+function axisY(max, steps){
+  const out=[]; for(let i=0;i<=steps;i++) out.push(max*i/steps); return out;
+}
+
+/* ==========================================================================
+   Chart: vertical bars with 95% CI whiskers
+   ========================================================================== */
+function vbarCI(host, opts){
+  const rows = opts.rows, W = 720, padL=44, padR=12, padT=26, padB=52;
+  const H = opts.height || 320;
+  const iw = W-padL-padR, ih = H-padT-padB;
+  const max = niceMax(Math.max(...rows.map(r=>r.ci_high||r.v)) * 1.14);
+  const y = v => padT + ih - (v/max)*ih;
+  const n = rows.length, slot = iw/n, bw = Math.min(52, slot*0.52);
+
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
+  // gridlines + y ticks
+  axisY(max,4).forEach(t=>{
+    s += `<line x1="${padL}" y1="${y(t)}" x2="${W-padR}" y2="${y(t)}" stroke="${LINE}" stroke-width="1"/>`;
+    s += `<text x="${padL-9}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="${INK3}">${nf(t,0)}</text>`;
+  });
+  rows.forEach((r,i)=>{
+    const cx = padL + slot*i + slot/2;
+    const top = y(r.v), bot = y(0);
+    const lo = y(r.ci_low), hi = y(r.ci_high);
+    const fill = r.low_confidence ? 'url(#hatch)' : (r.color || PAL[0]);
+    s += `<g data-tip="${esc(r.tip)}">`;
+    // hover hit area
+    s += `<rect x="${cx-slot/2}" y="${padT}" width="${slot}" height="${ih}" fill="transparent"/>`;
+    s += `<rect x="${cx-bw/2}" y="${top}" width="${bw}" height="${Math.max(0,bot-top)}" rx="4" fill="${fill}"/>`;
+    if(r.ci_low!=null && r.ci_high!=null){
+      s += `<line x1="${cx}" y1="${hi}" x2="${cx}" y2="${lo}" stroke="${INK}" stroke-width="1.4"/>`;
+      s += `<line x1="${cx-7}" y1="${hi}" x2="${cx+7}" y2="${hi}" stroke="${INK}" stroke-width="1.4"/>`;
+      s += `<line x1="${cx-7}" y1="${lo}" x2="${cx+7}" y2="${lo}" stroke="${INK}" stroke-width="1.4"/>`;
+    }
+    s += `<text x="${cx}" y="${hi-11}" text-anchor="middle" font-size="12.5" font-weight="600" fill="${INK}">${nf(r.v,1)}</text>`;
+    s += `<text x="${cx}" y="${bot+20}" text-anchor="middle" font-size="12.5" fill="${INK}">${esc(r.label)}</text>`;
+    if(r.sub) s += `<text x="${cx}" y="${bot+36}" text-anchor="middle" font-size="11" fill="${INK3}">${esc(r.sub)}</text>`;
+    s += `</g>`;
+  });
+  s += `<defs><pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <rect width="6" height="6" fill="#c9c9ce"/>
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#fff" stroke-width="2.4"/></pattern></defs>`;
+  s += `<text x="${padL-9}" y="${padT-10}" text-anchor="end" font-size="11" fill="${INK3}">${esc(opts.unit||'%')}</text>`;
+  s += `</svg>`;
+  host.innerHTML = s;
+}
+
+/* ==========================================================================
+   Chart: horizontal bars
+   ========================================================================== */
+function hbar(host, opts){
+  const rows = opts.rows, W = 720, padL = opts.padL || 150, padR = 62, padT = 8, padB = 8;
+  const rh = opts.rowH || 40;
+  const H = padT + padB + rows.length*rh;
+  const iw = W - padL - padR;
+  const max = niceMax(Math.max(...rows.map(r=>r.ci_high||r.v)) * 1.02);
+  const bh = Math.min(20, rh*0.5);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
+  rows.forEach((r,i)=>{
+    const cy = padT + i*rh + rh/2;
+    const w = Math.max(2, (r.v/max)*iw);
+    const fill = r.low_confidence ? 'url(#hatch2)' : (r.color || PAL[0]);
+    s += `<g data-tip="${esc(r.tip)}">`;
+    s += `<rect x="0" y="${cy-rh/2}" width="${W}" height="${rh}" fill="transparent"/>`;
+    s += `<text x="${padL-12}" y="${cy+4}" text-anchor="end" font-size="12.5" fill="${INK}">${esc(r.label)}</text>`;
+    if(r.sub) s += `<text x="${padL-12}" y="${cy+17}" text-anchor="end" font-size="10.5" fill="${INK3}">${esc(r.sub)}</text>`;
+    s += `<rect x="${padL}" y="${cy-bh/2}" width="${w}" height="${bh}" rx="3" fill="${fill}"/>`;
+    if(r.ci_low!=null && r.ci_high!=null){
+      const x1 = padL + (r.ci_low/max)*iw, x2 = padL + (r.ci_high/max)*iw;
+      s += `<line x1="${x1}" y1="${cy}" x2="${x2}" y2="${cy}" stroke="${INK}" stroke-width="1.3"/>`;
+      s += `<line x1="${x1}" y1="${cy-5}" x2="${x1}" y2="${cy+5}" stroke="${INK}" stroke-width="1.3"/>`;
+      s += `<line x1="${x2}" y1="${cy-5}" x2="${x2}" y2="${cy+5}" stroke="${INK}" stroke-width="1.3"/>`;
+    }
+    s += `<text x="${padL+w+9}" y="${cy+4}" font-size="12.5" font-weight="600" fill="${INK}">${esc(r.fmt||nf(r.v,1))}</text>`;
+    s += `</g>`;
+  });
+  s += `<defs><pattern id="hatch2" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <rect width="6" height="6" fill="#c9c9ce"/>
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#fff" stroke-width="2.4"/></pattern></defs>`;
+  s += `</svg>`;
+  host.innerHTML = s;
+}
+
+/* ==========================================================================
+   Chart: heatmap  (rows = y categories, cols = x categories)
+   ========================================================================== */
+function heat(host, opts){
+  const yKeys = opts.yKeys, xKeys = opts.xKeys, get = opts.get;
+  const W = 720, padL = 92, padT = 30, padR = 10, padB = 10;
+  const rh = opts.rowH || 44, cw = (W - padL - padR)/xKeys.length;
+  const H = padT + yKeys.length*rh + padB;
+  const vals = []; yKeys.forEach(a=>xKeys.forEach(b=>{const v=get(a,b); if(v!=null) vals.push(v.v);}));
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const mix = t => { // white-ish -> accent
+    const r = Math.round(247 + (10-247)*t), g = Math.round(250 + (113-250)*t), b = Math.round(253 + (227-253)*t);
+    return `rgb(${r},${g},${b})`;
+  };
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
+  xKeys.forEach((b,j)=>{
+    s += `<text x="${padL + cw*j + cw/2}" y="${padT-11}" text-anchor="middle" font-size="11.5" fill="${INK2}">${esc(b)}</text>`;
+  });
+  yKeys.forEach((a,i)=>{
+    const cy = padT + i*rh;
+    s += `<text x="${padL-12}" y="${cy + rh/2 + 4}" text-anchor="end" font-size="12.5" fill="${INK}">${esc(a)}</text>`;
+    xKeys.forEach((b,j)=>{
+      const cell = get(a,b);
+      const t = cell==null ? 0 : (cell.v - mn)/((mx-mn)||1);
+      const fill = cell==null ? '#fafafa' : mix(0.12 + 0.88*t);
+      const fg = cell==null ? INK3 : (t>0.55 ? '#fff' : INK);
+      s += `<g data-tip="${esc(cell? cell.tip : 'no data')}">`;
+      s += `<rect x="${padL + cw*j + 1.5}" y="${cy + 2}" width="${cw-3}" height="${rh-4}" rx="5" fill="${fill}"/>`;
+      if(cell){
+        s += `<text x="${padL + cw*j + cw/2}" y="${cy + rh/2 + 4}" text-anchor="middle" font-size="12.5" font-weight="600" fill="${fg}">${nf(cell.v,1)}</text>`;
+      }
+      s += `</g>`;
+    });
+  });
+  s += `</svg>`;
+  host.innerHTML = s;
+}
+
+/* ==========================================================================
+   Chart: line / area
+   ========================================================================== */
+function line(host, opts){
+  const rows = opts.rows, W=720, padL=44, padR=16, padT=24, padB=42;
+  const H = opts.height || 230, iw = W-padL-padR, ih = H-padT-padB;
+  const max = niceMax(Math.max(...rows.map(r=>r.v))*1.12), min = 0;
+  const x = i => padL + (rows.length===1?iw/2:(iw*i/(rows.length-1)));
+  const y = v => padT + ih - ((v-min)/(max-min))*ih;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
+  axisY(max,4).forEach(t=>{
+    s += `<line x1="${padL}" y1="${y(t)}" x2="${W-padR}" y2="${y(t)}" stroke="${LINE}" stroke-width="1"/>`;
+    s += `<text x="${padL-9}" y="${y(t)+4}" text-anchor="end" font-size="11" fill="${INK3}">${nf(t,0)}</text>`;
+  });
+  const d  = rows.map((r,i)=>`${i?'L':'M'}${x(i)},${y(r.v)}`).join(' ');
+  const da = `${d} L${x(rows.length-1)},${y(min)} L${x(0)},${y(min)} Z`;
+  s += `<path d="${da}" fill="${ACCENT}" opacity="0.08"/>`;
+  s += `<path d="${d}" fill="none" stroke="${ACCENT}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  rows.forEach((r,i)=>{
+    s += `<g data-tip="${esc(r.tip)}"><circle cx="${x(i)}" cy="${y(r.v)}" r="9" fill="transparent"/>`;
+    s += `<circle cx="${x(i)}" cy="${y(r.v)}" r="3.2" fill="#fff" stroke="${ACCENT}" stroke-width="2"/></g>`;
+    if(i % (opts.labelEvery||3) === 0 || i === rows.length-1)
+      s += `<text x="${x(i)}" y="${H-padB+20}" text-anchor="middle" font-size="11" fill="${INK3}">${esc(r.label)}</text>`;
+  });
+  s += `<text x="${padL-9}" y="${padT-10}" text-anchor="end" font-size="11" fill="${INK3}">${esc(opts.unit||'%')}</text>`;
+  s += `</svg>`;
+  host.innerHTML = s;
+}
+
+/* ==========================================================================
+   Chart: combo bars (volume) + line (rate)
+   ========================================================================== */
+function combo(host, opts){
+  // padT is deep enough to hold the two axis-unit captions above the top gridline
+  // without them poking outside the viewBox.
+  const rows = opts.rows, W=720, padL=46, padR=52, padT=36, padB=42;
+  const H = opts.height || 258, iw=W-padL-padR, ih=H-padT-padB;
+  const bmax = niceMax(Math.max(...rows.map(r=>r.bar))*1.1);
+  const lmax = niceMax(Math.max(...rows.map(r=>r.line))*1.15);
+  const slot = iw/rows.length, bw = Math.min(20, slot*0.56);
+  const yb = v => padT + ih - (v/bmax)*ih;
+  const yl = v => padT + ih - (v/lmax)*ih;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
+  axisY(bmax,4).forEach(t=>{
+    s += `<line x1="${padL}" y1="${yb(t)}" x2="${W-padR}" y2="${yb(t)}" stroke="${LINE}" stroke-width="1"/>`;
+    s += `<text x="${padL-9}" y="${yb(t)+4}" text-anchor="end" font-size="11" fill="${INK3}">${nf0(t)}</text>`;
+  });
+  rows.forEach((r,i)=>{
+    const cx = padL + slot*i + slot/2;
+    s += `<g data-tip="${esc(r.tip)}"><rect x="${cx-slot/2}" y="${padT}" width="${slot}" height="${ih}" fill="transparent"/>`;
+    s += `<rect x="${cx-bw/2}" y="${yb(r.bar)}" width="${bw}" height="${Math.max(0,yb(0)-yb(r.bar))}" rx="3" fill="#d8d8dd"/></g>`;
+  });
+  const d = rows.map((r,i)=>`${i?'L':'M'}${padL+slot*i+slot/2},${yl(r.line)}`).join(' ');
+  s += `<path d="${d}" fill="none" stroke="${ACCENT}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  rows.forEach((r,i)=>{
+    const cx = padL + slot*i + slot/2;
+    s += `<circle cx="${cx}" cy="${yl(r.line)}" r="3" fill="#fff" stroke="${ACCENT}" stroke-width="2"/>`;
+    if(i % (opts.labelEvery||3) === 0)
+      s += `<text x="${cx}" y="${H-padB+20}" text-anchor="middle" font-size="10.5" fill="${INK3}">${esc(r.label)}</text>`;
+  });
+  // Unit captions sit above the top axis tick, not level with it, or they collide
+  // with the highest tick value when it is left-anchored in the same gutter.
+  s += `<text x="${W-padR+9}" y="${padT-20}" font-size="11" fill="${ACCENT}">${esc(opts.lineUnit||'%')}</text>`;
+  s += `<text x="${padL-9}" y="${padT-20}" text-anchor="end" font-size="11" fill="${INK3}">${esc(opts.barUnit||'posts')}</text>`;
+  s += `</svg>`;
+  host.innerHTML = s;
+}
+
+/* ==========================================================================
+   Chart: 100% horizontal stacked bars (allocation scenarios)
+   ========================================================================== */
+function stack(host, opts){
+  const scenarios = opts.scenarios, keys = opts.keys, colors = opts.colors;
+  // padL is sized so the longest row label ("Efficiency") still fits inside the
+  // viewBox when right-anchored at padL-12 — otherwise it spills out of the card.
+  const W = 720, padL = 150, padR = 92, padT = 10, padB = 10;
+  const rh = opts.rowH || 46, H = padT + padB + scenarios.length*rh;
+  const iw = W - padL - padR, bh = Math.min(26, rh*0.55);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
+  scenarios.forEach((sc,i)=>{
+    const cy = padT + i*rh + rh/2;
+    s += `<text x="${padL-12}" y="${cy+4}" text-anchor="end" font-size="12.5" fill="${INK}">${esc(sc.label)}</text>`;
+    let acc = 0;
+    sc.parts.forEach((p,j)=>{
+      const w = (p.value/100)*iw;
+      const x = padL + (acc/100)*iw;
+      acc += p.value;
+      if(p.value <= 0) return;
+      s += `<g data-tip="${esc(p.tip)}"><rect x="${x}" y="${cy-bh/2}" width="${Math.max(0,w-1.5)}" height="${bh}" fill="${colors[j%colors.length]}"/>`;
+      if(w > 46) s += `<text x="${x+w/2-0.75}" y="${cy+4}" text-anchor="middle" font-size="11.5" font-weight="600" fill="${j<2?'#fff':INK}">${nf(p.value,0)}%</text>`;
+      s += `</g>`;
+    });
+    s += `<text x="${W-padR+10}" y="${cy+4}" font-size="12.5" font-weight="600" fill="${INK}">${esc(sc.right)}</text>`;
+    if(sc.sub) s += `<text x="${W-padR+10}" y="${cy+18}" font-size="10.5" fill="${INK3}">${esc(sc.sub)}</text>`;
+  });
+  s += `</svg>`;
+  host.innerHTML = s;
+}
+
+/* ==========================================================================
+   Chart: CI interval plot (difference vs zero)
+   ========================================================================== */
+function ciplot(host, opts){
+  // padL leaves room for the longest gutter label; English on line 1, Chinese on
+  // line 2, so neither has to be truncated.
+  const rows = opts.rows, W=720, padL=152, padR=22, padT=30, padB=34;
+  const rh = opts.rowH || 62, H = padT + rows.length*rh + padB;
+  const iw = W - padL - padR;
+  const lo = Math.min(...rows.map(r=>r.ci_low)), hi = Math.max(...rows.map(r=>r.ci_high));
+  const pad = Math.max(Math.abs(lo), Math.abs(hi)) * 1.25 || 1;
+  const x = v => padL + ((v + pad)/(2*pad))*iw;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'')}">`;
+  // zero line
+  s += `<line x1="${x(0)}" y1="${padT-12}" x2="${x(0)}" y2="${H-padB+6}" stroke="${INK}" stroke-width="1.4" stroke-dasharray="3 3"/>`;
+  s += `<text x="${x(0)}" y="${H-padB+24}" text-anchor="middle" font-size="11" fill="${INK2}">0 — no difference</text>`;
+  for(let i=-2;i<=2;i++){
+    const v = pad*i/2;
+    s += `<text x="${x(v)}" y="${padT-14}" text-anchor="middle" font-size="10.5" fill="${INK3}">${nf(v,1)}</text>`;
+  }
+  rows.forEach((r,i)=>{
+    const cy = padT + i*rh + rh/2;
+    const sig = r.ci_low > 0 || r.ci_high < 0;
+    const col = sig ? ACCENT : '#9a9aa0';
+    s += `<g data-tip="${esc(r.tip)}"><rect x="0" y="${cy-rh/2}" width="${W}" height="${rh}" fill="transparent"/>`;
+    s += `<text x="${padL-14}" y="${cy-2}" text-anchor="end" font-size="12.5" font-weight="600" fill="${INK}">${esc(r.label)}</text>`;
+    s += `<text x="${padL-14}" y="${cy+14}" text-anchor="end" font-size="11" fill="${INK3}">${esc(r.sub)}</text>`;
+    s += `<line x1="${x(r.ci_low)}" y1="${cy}" x2="${x(r.ci_high)}" y2="${cy}" stroke="${col}" stroke-width="2"/>`;
+    s += `<line x1="${x(r.ci_low)}" y1="${cy-8}" x2="${x(r.ci_low)}" y2="${cy+8}" stroke="${col}" stroke-width="2"/>`;
+    s += `<line x1="${x(r.ci_high)}" y1="${cy-8}" x2="${x(r.ci_high)}" y2="${cy+8}" stroke="${col}" stroke-width="2"/>`;
+    s += `<circle cx="${x(r.v)}" cy="${cy}" r="5" fill="${col}"/>`;
+    // The verdict tag prefers to sit right of the interval, but flips to the left
+    // of it when that would push it past the viewBox edge.
+    const tagW = r.right.length * 6.6 + 6;
+    let tx = x(r.ci_high) + 12, anchor = 'start';
+    if (tx + tagW > W - padR) { tx = x(r.ci_low) - 12; anchor = 'end'; }
+    s += `<text x="${tx}" y="${cy+4}" text-anchor="${anchor}" font-size="11.5" fill="${INK2}">${esc(r.right)}</text>`;
+    s += `</g>`;
+  });
+  s += `</svg>`;
+  host.innerHTML = s;
+}
+
+/* ============================== tables =================================== */
+function table(host, head, rows){
+  let h = '<thead><tr>' + head.map(c=>`<th>${esc(c)}</th>`).join('') + '</tr></thead><tbody>';
+  rows.forEach(r=>{
+    h += '<tr>' + r.map((c,i)=>`<td class="${i?'num':''}">${c}</td>`).join('') + '</tr>';
+  });
+  host.innerHTML = h + '</tbody>';
+}
+
+/* ==========================================================================
+   Render everything
+   ========================================================================== */
+const M = DATA.meta, OV = DATA.overview;
+
+/* ---- nav ---- */
+$('nav-range').textContent = `${M.date_min} → ${M.date_max} · n=${nf0(M.rows_vertical_rate_valid)}`;
+$('nav-src').href = M.dataset.permalink;
+
+/* ---- KPI cards ---- */
+const vb = DATA.vertical_vs_benchmark.er_view;
+const kpis = [
+  [nf0(M.rows_vertical_rate_valid), 'Posts analysed', `垂类有效样本（共 ${nf0(M.rows_raw)} 条原始记录）`],
+  ['6', 'Platforms', 'Instagram · TikTok · YouTube · X · Facebook · LinkedIn'],
+  [nf(vb.vertical_median,1)+'%', 'Median interaction rate', '每 100 次浏览的互动数（中位数）'],
+  [nf0(OV.vertical.total_engagement/1e6)+'M', 'Interactions measured', '垂类内容累计互动量'],
+  ['24', 'Months covered', `${M.date_min} → ${M.date_max}`],
+];
+$('kpis').innerHTML = kpis.map(k=>
+  `<div class="kpi"><div class="v">${k[0]}</div><div class="l">${esc(k[1])}</div><div class="cn">${esc(k[2])}</div></div>`
+).join('');
+
+/* ---- 01 platform ---- */
+vbarCI($('c-platform-er'), {
+  height: 340, unit:'%', aria:'Median interaction rate by platform',
+  rows: DATA.platform.map((r,i)=>({
+    label: r.platform, v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
+    low_confidence: r.low_confidence, color: PAL[0], sub: `n=${r.n}`,
+    tip: tipHTML(r.platform, [
+      ['Median er_view', nf(r.median_er_view,2)+'%'],
+      ['95% CI', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
+      ['Mean er_view', nf(r.mean_er_view,2)+'%'],
+      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
+      ['Deep rate (shares+saves)', nf(r.mean_deep_rate,2)+'%'],
+      ['Sample size', nf0(r.n)+' posts'],
+    ])
+  }))
+});
+table($('t-platform'),
+  ['Platform','Med. ER','Reach','Depth','Role'],
+  DATA.platform.map(r=>{
+    let role = 'Depth';
+    if(r.mean_reach_ratio >= 1) role = 'Reach';
+    if(r.er_view_pooled >= 20) role = 'Interaction';
+    return [esc(r.platform), nf(r.median_er_view,1)+'%', nf(r.mean_reach_ratio,2)+'×',
+            nf(r.mean_deep_rate,1)+'%', role];
+  })
+);
+const ig = DATA.platform.find(p=>p.platform==='Instagram');
+const yt = DATA.platform.find(p=>p.platform==='YouTube');
+const tt = DATA.platform.find(p=>p.platform==='TikTok');
+$('n-platform').innerHTML =
+  `<b>Read:</b> Instagram's median interaction rate (${nf(ig.median_er_view,1)}%) is
+   ${nf(ig.median_er_view/yt.median_er_view,1)}× YouTube's (${nf(yt.median_er_view,1)}%), and the two confidence
+   intervals do not overlap — this gap is not sampling noise.
+   YouTube and TikTok are <em>reach</em> plays (views land at ${nf(yt.mean_reach_ratio,1)}× and
+   ${nf(tt.mean_reach_ratio,1)}× the creator's own follower base) but convert each view into far fewer interactions,
+   while LinkedIn and X carry the highest <em>high-intent</em> rates (shares + saves).
+   <br><br>
+   <b>解读：</b> Instagram 的中位互动率是 YouTube 的 ${nf(ig.median_er_view/yt.median_er_view,1)} 倍，且两者置信区间不重叠，差异可靠。
+   YouTube / TikTok 属于“触达型”（浏览量可达粉丝量的 ${nf(yt.mean_reach_ratio,1)} / ${nf(tt.mean_reach_ratio,1)} 倍），
+   但单次浏览的互动转化低；LinkedIn 与 X 的深度互动率（分享+收藏）最高。`;
+
+/* ---- 02 tier ---- */
+const tierOrder = ['Nano','Micro','Mid-tier','Macro'];
+const tierSorted = tierOrder.map(t=>DATA.tier.find(r=>r.influencer_tier===t)).filter(Boolean);
+vbarCI($('c-tier-er'), {
+  height: 300, unit:'%',
+  rows: tierSorted.map(r=>({
+    label: r.influencer_tier, v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
+    low_confidence: r.low_confidence, color: PAL[0], sub: `n=${r.n}`,
+    tip: tipHTML(r.influencer_tier, [
+      ['Median er_view', nf(r.median_er_view,2)+'%'],
+      ['95% CI', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
+      ['Mean followers', nf0(r.mean_followers)],
+      ['Sample size', nf0(r.n)+' posts'],
+    ], r.low_confidence ? 'Low confidence: n < 50, excluded from the budget plan' : '')
+  }))
+});
+hbar($('c-tier-eff'), {
+  padL: 96, rowH: 46,
+  rows: tierSorted.map(r=>({
+    label: r.influencer_tier, v: r.mean_eng_per_1k_fans, low_confidence: r.low_confidence,
+    color: PAL[1], fmt: nf0(r.mean_eng_per_1k_fans),
+    tip: tipHTML(r.influencer_tier, [
+      ['Interactions / 1k fans', nf0(r.mean_eng_per_1k_fans)],
+      ['Mean followers', nf0(r.mean_followers)],
+      ['Reach ratio', nf(r.mean_reach_ratio,2)+'×'],
+      ['Sample size', nf0(r.n)+' posts'],
+    ], r.low_confidence ? 'Low confidence: n < 50, excluded from the budget plan' : '')
+  }))
+});
+table($('t-band'),
+  ['Follower band','Posts','Median ER','Eng / 1k fans','Reach ×','Pooled ER'],
+  DATA.follower_band.map(r=>[esc(r.follower_band), nf0(r.n), nf(r.median_er_view,2)+'%',
+    nf0(r.mean_eng_per_1k_fans), nf(r.mean_reach_ratio,2)+'×', nf(r.er_view_pooled,2)+'%'])
+);
+
+/* ---- 03 creative ---- */
+hbar($('c-family'), {
+  padL: 150, rowH: 46,
+  rows: DATA.content_family.map(r=>({
+    label: r.content_family, v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
+    low_confidence: r.low_confidence, color: PAL[0],
+    tip: tipHTML(r.content_family, [
+      ['Median er_view', nf(r.median_er_view,2)+'%'],
+      ['95% CI', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
+      ['Deep rate', nf(r.mean_deep_rate,2)+'%'],
+      ['Save rate', nf(r.mean_save_rate,2)+'%'],
+      ['Share rate', nf(r.mean_share_rate,2)+'%'],
+      ['Sample size', nf0(r.n)+' posts'],
+    ])
+  }))
+});
+hbar($('c-hashtag'), {
+  padL: 74, rowH: 42,
+  rows: DATA.hashtag.map(r=>({
+    label: r.hashtag_bucket + ' tags', v: r.er_view_pooled, color: PAL[1],
+    tip: tipHTML('Hashtags: '+r.hashtag_bucket, [
+      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
+      ['Deep rate', nf(r.deep_rate_pooled,2)+'%'],
+      ['Sample size', nf0(r.n)+' posts'],
+    ])
+  }))
+});
+const nv = DATA.verified.find(v=>v.verified==='Not verified'), yv = DATA.verified.find(v=>v.verified==='Verified');
+$('n-verified').innerHTML =
+  `<b>Verification:</b> verified accounts post at a pooled interaction rate of ${nf(yv.er_view_pooled,2)}% vs
+   ${nf(nv.er_view_pooled,2)}% for unverified ones — the badge does <em>not</em> buy engagement here, and since
+   verified accounts are also the larger ones this is consistent with the scale-efficiency story in §02.
+   <br><br><b>认证：</b> 认证账号的汇总互动率（${nf(yv.er_view_pooled,2)}%）低于未认证账号（${nf(nv.er_view_pooled,2)}%），
+   认证标识本身并未带来互动优势；这与 §02 中“规模越大、单位粉丝产出越低”的结论一致。`;
+
+/* ---- 04 timing ---- */
+const slots = ['06-11 Morning','12-17 Afternoon','18-23 Evening','00-05 Late night']
+  .filter(s=>DATA.timing_weekday_slot.some(r=>r.time_slot===s));
+const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const cellMap = {};
+DATA.timing_weekday_slot.forEach(r=>{ cellMap[r.weekday+'|'+r.time_slot] = r; });
+heat($('c-heat'), {
+  yKeys: days, xKeys: slots, rowH: 44,
+  get: (a,b)=>{
+    const r = cellMap[a+'|'+b]; if(!r) return null;
+    return { v: r.er_view_pooled, tip: tipHTML(`${a} · ${b}`, [
+      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
+      ['Deep rate', nf(r.deep_rate_pooled,2)+'%'],
+      ['Mean views', nf0(r.mean_views)],
+      ['Sample size', nf0(r.n)+' posts'],
+    ])};
+  }
+});
+line($('c-hour'), {
+  height: 250, labelEvery: 3,
+  rows: DATA.timing_hour.map(r=>({
+    label: String(r.hour).padStart(2,'0'), v: r.er_view_pooled,
+    tip: tipHTML(`Hour ${String(r.hour).padStart(2,'0')}:00`, [
+      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
+      ['Deep rate', nf(r.deep_rate_pooled,2)+'%'],
+      ['Sample size', nf0(r.n)+' posts'],
+    ])
+  }))
+});
+combo($('c-month'), {
+  height: 250, labelEvery: 3, barUnit:'posts', lineUnit:'%',
+  rows: DATA.monthly.map(r=>({
+    label: r.year_month.slice(2), bar: r.n, line: r.er_view_pooled,
+    tip: tipHTML(r.year_month, [
+      ['Posts', nf0(r.n)],
+      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
+      ['Views', nf0(r.total_views)],
+      ['Engagement', nf0(r.total_engagement)],
+    ])
+  }))
+});
+
+/* ---- 05 budget ---- */
+const BT = DATA.budget.by_tier, BP = DATA.budget.by_platform;
+$('s-econ').innerHTML =
+  `Cost is modelled as <code>${esc(DATA.budget.assumption.formula)}</code> at
+   CPM = $${nf(DATA.budget.assumption.cpm_usd_per_1k_followers,0)} per 1,000 followers, against a fixed
+   $${nf0(DATA.budget.assumption.budget_envelope_usd)} envelope. <em>成本按「粉丝量 × CPM ÷ 1000」估算（CPM = $10），
+   总预算固定为 $100,000；数据集不含花费字段，这是模型中唯一的外生假设。</em>`;
+
+function econTable(host, b, keyLabel){
+  table(host,
+    [keyLabel,'Posts','Mean fans','Cost / post','Mean interactions','Eng / $1k','CPE'],
+    b.groups.map(g=>[
+      esc(g.key) + (g.low_confidence ? ' <span class="flag">low n</span>' : ''),
+      nf0(g.n), nf0(g.mean_followers), '$'+nf(g.cost_per_post,0),
+      nf0(g.mean_engagement), nf0(g.engagements_per_1k_usd),
+      '$'+nf(g.cpe_usd,3)
+    ])
+  );
+}
+econTable($('t-econ-tier'), BT, 'Creator tier');
+econTable($('t-econ-plat'), BP, 'Platform');
+
+function allocChart(hostId, legendId, b){
+  const keys = b.groups.map(g=>g.key);
+  const colors = b.groups.map((g,i)=> g.low_confidence ? '#c9c9ce' : PAL[i % PAL.length]);
+  const scene = b.scenarios.filter(s=>s.name!=='efficiency_share_unfiltered');
+  // Row labels stay short English; the Chinese names live in the card sub-caption
+  // so nothing has to be squeezed into the SVG gutter.
+  const labels = {structure_share:'Status quo', even_share:'Even split',
+                  efficiency_share:'Efficiency'};
+  stack($(hostId), {
+    rowH: 52, keys, colors,
+    scenarios: scene.map(s=>({
+      label: labels[s.name] || s.name,
+      right: nf0(s.expected_engagement/1000)+'k',
+      sub: (s.uplift_vs_even_pct>0?'+':'')+nf(s.uplift_vs_even_pct,0)+'% vs even',
+      parts: keys.map(k=>{
+        const d = s.detail.find(x=>x.key===k);
+        const g = b.groups.find(x=>x.key===k);
+        return { value: d?d.share_pct:0, tip: tipHTML(k, [
+          ['Share of envelope', nf(d?d.share_pct:0,1)+'%'],
+          ['Spend', '$'+nf0(d?d.spend_usd:0)],
+          ['Posts bought', nf(d?d.posts_bought:1)],
+          ['Expected interactions', nf0(d?d.expected_engagement:0)],
+          ['CPE', '$'+nf(g.cpe_usd,3)],
+        ])};
+      })
+    }))
+  });
+  $(legendId).innerHTML = b.groups.map((g,i)=>
+    `<span><i style="background:${colors[i]}"></i>${esc(g.key)}${g.low_confidence?' (low n)':''}</span>`).join('');
+}
+allocChart('c-alloc-tier','l-alloc-tier', BT);
+allocChart('c-alloc-plat','l-alloc-plat', BP);
+
+table($('t-sens'),
+  ['CPM (USD)','Best tier','Eng / $1k','CPE','Efficiency plan','Even split','Uplift'],
+  DATA.budget.cpm_sensitivity_tier.map(r=>[
+    '$'+nf(r.cpm,0), esc(r.best_group), nf0(r.best_engagements_per_1k_usd), '$'+nf(r.best_cpe_usd,3),
+    nf0(r.efficiency_expected_engagement), nf0(r.even_expected_engagement),
+    (r.uplift_pct>0?'+':'')+nf(r.uplift_pct,0)+'%'
+  ])
+);
+
+/* ---- 06 vertical vs benchmark ---- */
+// Short English gutter labels, Chinese on the second line — keeps both inside the viewBox.
+const vbRows = [
+  ['er_view','Interaction rate','互动率','%'],
+  ['eng_per_1k_fans','Eng / 1k fans','每千粉丝互动',''],
+  ['reach_ratio','Reach ratio','触达放大倍数','×'],
+];
+ciplot($('c-vb'), {
+  rowH: 66,
+  rows: vbRows.map(([k,label,cn,unit])=>{
+    const d = DATA.vertical_vs_benchmark[k];
+    const sig = d.significant_95 === 1;
+    return {
+      label, sub: cn,
+      v: d.difference, ci_low: d.ci_low, ci_high: d.ci_high,
+      right: sig ? 'significant' : 'not significant',
+      tip: tipHTML(label, [
+        ['Vertical median', nf(d.vertical_median,3)+(unit==='%'?'%':'')],
+        ['Benchmark median', nf(d.benchmark_median,3)+(unit==='%'?'%':'')],
+        ['Difference', (d.difference>0?'+':'')+nf(d.difference,3)],
+        ['95% CI', `${nf(d.ci_low,3)} – ${nf(d.ci_high,3)}`],
+        ['n (vertical / benchmark)', `${nf0(d.n_vertical)} / ${nf0(d.n_benchmark)}`],
+        ['Verdict', sig ? 'distinguishable at 95%' : 'NOT distinguishable at 95%'],
+      ])
+    };
+  })
+});
+hbar($('c-seg'), {
+  padL: 92, rowH: 46,
+  rows: DATA.segment.map(r=>({
+    label: r.vertical_segment, v: r.median_er_view, ci_low: r.ci_low, ci_high: r.ci_high,
+    color: PAL[1],
+    tip: tipHTML(r.vertical_segment, [
+      ['Median er_view', nf(r.median_er_view,2)+'%'],
+      ['95% CI', `${nf(r.ci_low,2)} – ${nf(r.ci_high,2)}`],
+      ['Pooled er_view', nf(r.er_view_pooled,2)+'%'],
+      ['Eng / 1k fans', nf0(r.mean_eng_per_1k_fans)],
+      ['Sample size', nf0(r.n)+' posts'],
+    ])
+  }))
+});
+
+/* ---- 07 findings ---- */
+const F = DATA.findings;
+$('finds').innerHTML = F.map(f=>`
+  <div class="find">
+    <div class="tag">${esc(f.tag)}</div>
+    <h4>${f.title}</h4>
+    ${f.body.map(p=>`<p>${p}</p>`).join('')}
+    <p class="cn">${f.cn}</p>
+  </div>`).join('');
+
+/* ---- footer ---- */
+$('f-method').innerHTML = DATA.method_notes.map(x=>`<li>${x}</li>`).join('');
+$('f-limits').innerHTML = DATA.limitations.map(x=>`<li>${x}</li>`).join('');
+$('f-provenance').innerHTML =
+  `<b>Dataset</b> — ${esc(M.dataset.name)} · ${esc(M.dataset.publisher)} · ${esc(M.dataset.license)}
+   · <a href="${esc(M.dataset.permalink)}" target="_blank" rel="noopener">${esc(M.dataset.permalink)}</a>
+   · SHA256 <code>${esc(String(M.dataset.sha256).slice(0,16))}…</code><br>
+   ${esc(M.dataset.provenance_note)}<br>
+   <span style="color:var(--ink-3)">Dashboard generated ${esc(M.generated_at_utc)} · ${esc(M.vertical_definition)} ·
+   ${nf0(M.rows_raw)} raw rows → ${nf0(M.rows_rate_valid)} rate-valid → ${nf0(M.rows_vertical_rate_valid)} in the vertical.</span>`;
+</script>
+</body>
+</html>

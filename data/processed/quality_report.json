@@ -1,0 +1,91 @@
+{
+  "row_accounting": {
+    "rows_read": 5000,
+    "engagement_exceeds_views": 295
+  },
+  "profile": {
+    "posts": 5000,
+    "rate_valid_posts": 4705,
+    "rate_valid_pct": 94.1,
+    "vertical_posts": 1191,
+    "vertical_share_pct": 23.82,
+    "date_min": "2024-01-01",
+    "date_max": "2025-12-31",
+    "platforms": {
+      "Instagram": 1283,
+      "Twitter": 994,
+      "Facebook": 984,
+      "TikTok": 758,
+      "LinkedIn": 502,
+      "YouTube": 479
+    },
+    "content_types": {
+      "Video": 616,
+      "Story": 568,
+      "Poll": 384,
+      "Post": 378,
+      "Live": 358,
+      "Carousel": 333,
+      "Photo": 320,
+      "Reel": 306,
+      "Stitch": 259,
+      "Retweet": 251,
+      "Duet": 248,
+      "Tweet": 239,
+      "Thread": 236,
+      "Community Post": 135,
+      "Document": 132,
+      "Short": 121,
+      "Article": 116
+    },
+    "content_families": {
+      "Short video": 1550,
+      "Text / long-form": 1487,
+      "Story / interactive": 952,
+      "Static image": 653,
+      "Live": 358
+    },
+    "categories": {
+      "Gaming": 476,
+      "Technology": 434,
+      "Lifestyle": 433,
+      "Entertainment": 432,
+      "Fashion": 428,
+      "Food": 413,
+      "Education": 413,
+      "Sports": 401,
+      "Travel": 398,
+      "Health": 397,
+      "Fitness": 393,
+      "Business": 382
+    },
+    "tiers": {
+      "Macro": 3993,
+      "Mid-tier": 483,
+      "Micro": 427,
+      "Nano": 97
+    },
+    "tier_skew_warning": "Macro accounts hold 79.9% of all posts and Nano only 1.9% (97 rows). Tier-level results for Nano are therefore low-confidence and are visually flagged on the dashboard.",
+    "sentiments": {
+      "Positive": 2503,
+      "Neutral": 1747,
+      "Negative": 750
+    },
+    "views": {
+      "min": 527,
+      "median": 40663.5,
+      "mean": 110968.4,
+      "max": 999256
+    },
+    "er_view_median": 12.0689,
+    "er_view_p95": 111.2789,
+    "er_view_max": 1892.196,
+    "followers": {
+      "min": 543,
+      "median": 248930.5,
+      "max": 499815
+    },
+    "verified_share_pct": 26.14
+  },
+  "generated_at_utc": "2026-09-24T07:33:26+00:00"
+}

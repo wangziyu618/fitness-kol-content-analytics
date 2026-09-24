@@ -1,0 +1,5 @@
+influencer_tier,tier_rank,n,mean_followers,mean_eng_per_1k_fans,mean_reach_ratio,mean_deep_rate,total_views,total_engagement,mean_engagement_per_post,er_view_pooled,median_er_view
+Nano,0,16,5834.0,1969.07,34.1496,2.4918,2521031,149360,9335.0,5.9246,9.0956
+Micro,1,98,30301.0,357.84,4.2881,2.8839,11540051,898513,9168.5,7.786,10.633
+Mid-tier,2,107,75445.0,118.59,0.9915,3.6968,7632161,883962,8261.3,11.5821,12.2272
+Macro,3,894,299358.0,37.1,0.4875,3.4725,109356456,8369563,9361.9,7.6535,10.6622
