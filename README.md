@@ -5,7 +5,7 @@
 > 与任何实习经历完全独立，代码可复现、数据可核查、结论均标注来源与置信度。
 
 **🔗 Interactive dashboard · 在线交互式看板：**
-**https://wdnmdlgb.github.io/fitness-kol-content-analytics/**
+**https://wangziyu618.github.io/fitness-kol-content-analytics/**
 
 ---
 
